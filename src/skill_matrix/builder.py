@@ -5,15 +5,15 @@ from typing import Dict, List, Optional
 import pandas as pd
 
 from .schemas import MatrixBuildResult
-from .transformers import BaseMatrixTransformer
+from .transformers.transformers import BaseMatrixTransformer
 
 
 @dataclass
 class SkillMatrixBuilder:
-    global_skill_map: List[str] 
+    global_skills: List[str] 
     transformers: List[BaseMatrixTransformer] = field(default_factory=list)
 
-    def build(self, df: pd.DataFrame, global_skills: List[str] ) -> MatrixBuildResult:
+    def build(self, df: pd.DataFrame) -> MatrixBuildResult:
    
         missing_columns = [skill for skill in self.global_skills if skill not in df.columns]
 
