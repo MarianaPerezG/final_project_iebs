@@ -10,18 +10,19 @@ from .transformers.transformers import BaseMatrixTransformer
 
 @dataclass
 class SkillMatrixBuilder:
-    global_skills: List[str] 
+    global_skills: List[str]
     transformers: List[BaseMatrixTransformer] = field(default_factory=list)
 
     def build(self, df: pd.DataFrame) -> MatrixBuildResult:
-   
-        missing_columns = [skill for skill in self.global_skills if skill not in df.columns]
+
+        missing_columns = [
+            skill for skill in self.global_skills if skill not in df.columns
+        ]
 
         if missing_columns:
             raise ValueError(
                 f"Missing columns required for building the Skill Matrix: {missing_columns}"
             )
-
 
         matrix = df[self.global_skills].copy()
 
@@ -33,7 +34,6 @@ class SkillMatrixBuilder:
         for global_skill, cols in self.global_skill_map.items():
             matrix[global_skill] = df[cols].mean(axis=1)
 
-
         metadata = {
             "n_rows": len(matrix),
             "n_skills": len(matrix.columns),
@@ -41,7 +41,5 @@ class SkillMatrixBuilder:
         }
 
         return MatrixBuildResult(
-            matrix=matrix,
-            metadata=metadata,
-            applied_transformers=applied_transformers
+            matrix=matrix, metadata=metadata, applied_transformers=applied_transformers
         )
