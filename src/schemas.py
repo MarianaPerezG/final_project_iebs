@@ -9,6 +9,12 @@ class MatrixBuildResult:
     matrix: pd.DataFrame
     metadata: Dict[str, Any] = field(default_factory=dict)
     applied_transformers: List[str] = field(default_factory=list)
+    
+
+@dataclass
+class DownloadConfig:
+    dataset_ref: str
+    output_dir: str = "src/data/raw"
 
 
 @dataclass
