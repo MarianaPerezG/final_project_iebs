@@ -16,3 +16,4 @@ class SkillMatrixConfig:
     dataset_path: str
     output_path: str
     transformers: list[Any] = field(default_factory=list)
+

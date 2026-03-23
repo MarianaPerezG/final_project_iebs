@@ -46,4 +46,6 @@ def create_skill_matrix(
     except Exception as e:
         raise ValueError(f"Error generating output CSV: {e}")
 
-    return print(f"SkillMatrix created in {output_path}")
+    print(f"SkillMatrix created in {output_path}")
+    return result
+

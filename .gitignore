@@ -3,3 +3,13 @@ __pycache__/
 .env
 .venv
 .ipynb_checkpoints/
+
+# Environment variables
+.env
+
+# Kaggle
+kaggle.json
+.kaggle/
+
+# Data
+src/data/raw/*
