@@ -12,6 +12,11 @@ def download_kaggle_dataset(config: DownloadConfig):
   
     output_path = Path(config.output_path)
     output_path.mkdir(parents=True, exist_ok=True)
+    
+    existing_csvs = list(output_path.rglob("*.csv"))
+    if existing_csvs:
+        print(f"Dataset already exists at {existing_csvs[0]}. Skipping download.")
+        return
 
     load_dotenv()
     if not os.getenv("KAGGLE_USERNAME") or not os.getenv("KAGGLE_KEY"):

@@ -5,35 +5,28 @@ from typing import Dict, List, Optional
 import pandas as pd
 
 from schemas import MatrixBuildResult
+from scripts.save_data import save_dataframe_to_csv
 from skill_matrix.transformers.transformers import BaseMatrixTransformer
 
 
 @dataclass
-class SkillMatrixBuilder:
+class MatrixBuilder:
     global_skills: List[str]
     transformers: List[BaseMatrixTransformer] = field(default_factory=list)
 
     def build(self, df: pd.DataFrame) -> MatrixBuildResult:
+        
+        for skill in self.global_skills:
+            if skill not in df.columns:
+                df[skill] = pd.NA
 
-        missing_columns = [
-            skill for skill in self.global_skills if skill not in df.columns
-        ]
-
-        if missing_columns:
-            raise ValueError(
-                f"Missing columns required for building the Skill Matrix: {missing_columns}"
-            )
-
-        matrix = df[self.global_skills].copy()
+        matrix = df.copy()
 
         applied_transformers = []
         for transformer in self.transformers:
             matrix = transformer.apply(matrix, df)
-            applied_transformers.append(transformer.name)
-
-        for global_skill, cols in self.global_skill_map.items():
-            matrix[global_skill] = df[cols].mean(axis=1)
-
+            applied_transformers.append(transformer.name) 
+        
         metadata = {
             "n_rows": len(matrix),
             "n_skills": len(matrix.columns),
