@@ -3,9 +3,13 @@ import re
 import pandas as pd
 
 from data.global_skills import GLOBAL_SKILLS
-from data.scoring_rules import (FAMILY_SCORES, MAX_SKILL_SCORE,
-                                MIN_SKILL_SCORE, ROLE_TO_FAMILY,
-                                SEMANTIC_ADJUSTMENTS)
+from data.scoring_rules import (
+    FAMILY_SCORES,
+    MAX_SKILL_SCORE,
+    MIN_SKILL_SCORE,
+    ROLE_TO_FAMILY,
+    SEMANTIC_ADJUSTMENTS,
+)
 
 
 def _clamp_score(value: int) -> int:

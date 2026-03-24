@@ -12,17 +12,22 @@ from skill_matrix.configuration import create_skill_matrix_config
 
 
 def run_pipeline():
-    
+
     try:
         logging.info("Starting dataset download...")
-        download_kaggle_dataset(DownloadConfig(
-            dataset_ref=data.configuration.datasets.DATASETS_CONFIGURATION["SKILL_MATRIX_DATASET_REF"],
-            output_path=data.configuration.datasets.DATASETS_CONFIGURATION["SKILL_MATRIX_OUTPUT_PATH"]
-        ))
+        download_kaggle_dataset(
+            DownloadConfig(
+                dataset_ref=data.configuration.datasets.DATASETS_CONFIGURATION[
+                    "SKILL_MATRIX_DATASET_REF"
+                ],
+                output_path=data.configuration.datasets.DATASETS_CONFIGURATION[
+                    "SKILL_MATRIX_OUTPUT_PATH"
+                ],
+            )
+        )
         logging.info("Dataset download completed. Creating skill matrix...")
         create_skill_matrix(
-            global_skills=GLOBAL_SKILLS, 
-            config= create_skill_matrix_config()
+            global_skills=GLOBAL_SKILLS, config=create_skill_matrix_config()
         )
         logging.info("Pipeline executed successfully.")
     except Exception as e:

@@ -5,7 +5,6 @@ from typing import Dict, List, Optional
 import pandas as pd
 
 from schemas import MatrixBuildResult
-from scripts.save_data import save_dataframe_to_csv
 from skill_matrix.transformers.transformers import BaseMatrixTransformer
 
 
@@ -15,7 +14,7 @@ class MatrixBuilder:
     transformers: List[BaseMatrixTransformer] = field(default_factory=list)
 
     def build(self, df: pd.DataFrame) -> MatrixBuildResult:
-        
+
         for skill in self.global_skills:
             if skill not in df.columns:
                 df[skill] = pd.NA
@@ -25,8 +24,8 @@ class MatrixBuilder:
         applied_transformers = []
         for transformer in self.transformers:
             matrix = transformer.apply(matrix, df)
-            applied_transformers.append(transformer.name) 
-        
+            applied_transformers.append(transformer.name)
+
         metadata = {
             "n_rows": len(matrix),
             "n_skills": len(matrix.columns),

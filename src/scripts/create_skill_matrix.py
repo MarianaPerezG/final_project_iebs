@@ -14,7 +14,9 @@ def create_skill_matrix(
 ):
 
     dataset_path = Path(config.dataset_path)
-    dataset = list(dataset_path.rglob("*.csv"))[0] if dataset_path.is_dir() else dataset_path
+    dataset = (
+        list(dataset_path.rglob("*.csv"))[0] if dataset_path.is_dir() else dataset_path
+    )
 
     if not dataset.exists():
         raise FileNotFoundError(f"Dataset not found on: {dataset_path}")
@@ -34,6 +36,6 @@ def create_skill_matrix(
     builder = MatrixBuilder(global_skills=list(global_skills), transformers=[])
 
     result = builder.build(df)
-    
+
     save_dataframe_to_csv(result.matrix, config.output_path)
-    logger.info(f"Skill matrix saved to: {config.output_path}") 
+    logger.info(f"Skill matrix saved to: {config.output_path}")
