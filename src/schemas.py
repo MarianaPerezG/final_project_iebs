@@ -14,7 +14,7 @@ class MatrixBuildResult:
 @dataclass
 class DownloadConfig:
     dataset_ref: str
-    output_dir: str = "src/data/raw"
+    output_path: str = "src/data/raw"
 
 
 @dataclass

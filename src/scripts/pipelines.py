@@ -10,7 +10,7 @@ def run_pipeline(
     skill_matrix_config: SkillMatrixConfig,
 ):
     create_skill_matrix(
-        global_skills=global_skills, skill_matrix_config=skill_matrix_config
+        global_skills=global_skills, config=skill_matrix_config
     )
 
 

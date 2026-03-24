@@ -10,7 +10,7 @@ from schemas import DownloadConfig
 
 def download_kaggle_dataset(config: DownloadConfig):
   
-    output_path = Path(config.output_dir)
+    output_path = Path(config.output_path)
     output_path.mkdir(parents=True, exist_ok=True)
 
     load_dotenv()
@@ -28,6 +28,7 @@ def download_kaggle_dataset(config: DownloadConfig):
         )
     except Exception as e:
         raise RuntimeError(f"Error downloading dataset: {e}")
+
 
     print(f"Dataset downloaded successfully into {output_path}")
 

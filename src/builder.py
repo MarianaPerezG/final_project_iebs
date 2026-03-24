@@ -4,8 +4,8 @@ from dataclasses import dataclass, field
 from typing import Dict, List, Optional
 import pandas as pd
 
-from .schemas import MatrixBuildResult
-from .skill_matrix.transformers.transformers import BaseMatrixTransformer
+from schemas import MatrixBuildResult
+from skill_matrix.transformers.transformers import BaseMatrixTransformer
 
 
 @dataclass
