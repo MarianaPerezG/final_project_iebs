@@ -1,4 +1,4 @@
-from data.global_skills import GLOBAL_SKILLS
+from .global_skills import GLOBAL_SKILLS
 
 
 def _score(**skills: int) -> dict[str, int]:

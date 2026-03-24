@@ -1,6 +1,6 @@
 import logging
 
-import data.configuration.datasets
+from config.datasets import DATASETS_CONFIGURATION
 from data.global_skills import GLOBAL_SKILLS
 from schemas import DownloadConfig
 
@@ -8,7 +8,7 @@ import pandas as pd
 
 from scripts.create_skill_matrix import create_skill_matrix
 from scripts.download_data import download_kaggle_dataset
-from skill_matrix.configuration import create_skill_matrix_config
+from skill_matrix.config_loader import create_skill_matrix_config
 
 
 def run_pipeline():
@@ -17,12 +17,8 @@ def run_pipeline():
         logging.info("Starting dataset download...")
         download_kaggle_dataset(
             DownloadConfig(
-                dataset_ref=data.configuration.datasets.DATASETS_CONFIGURATION[
-                    "SKILL_MATRIX_DATASET_REF"
-                ],
-                output_path=data.configuration.datasets.DATASETS_CONFIGURATION[
-                    "SKILL_MATRIX_OUTPUT_PATH"
-                ],
+                dataset_ref=DATASETS_CONFIGURATION["SKILL_MATRIX_DATASET_REF"],
+                output_path=DATASETS_CONFIGURATION["SKILL_MATRIX_OUTPUT_PATH"],
             )
         )
         logging.info("Dataset download completed. Creating skill matrix...")

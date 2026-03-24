@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from data.configuration.datasets import (
+from config.datasets import (
     DATASETS_CONFIGURATION,
     SKILL_MATRIX_CONFIGURATION,
 )
