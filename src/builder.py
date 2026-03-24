@@ -5,7 +5,7 @@ from typing import Dict, List, Optional
 import pandas as pd
 
 from .schemas import MatrixBuildResult
-from .transformers.transformers import BaseMatrixTransformer
+from .skill_matrix.transformers.transformers import BaseMatrixTransformer
 
 
 @dataclass

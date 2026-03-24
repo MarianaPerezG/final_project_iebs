@@ -5,10 +5,12 @@ import kaggle
 import pandas as pd
 import os
 
+from schemas import DownloadConfig
 
-def download_kaggle_dataset(dataset_ref: str,output_dir: str = "src/data/raw"):
+
+def download_kaggle_dataset(config: DownloadConfig):
   
-    output_path = Path(output_dir)
+    output_path = Path(config.output_dir)
     output_path.mkdir(parents=True, exist_ok=True)
 
     load_dotenv()
@@ -20,7 +22,7 @@ def download_kaggle_dataset(dataset_ref: str,output_dir: str = "src/data/raw"):
     
     try:
         api.dataset_download_files(
-            dataset_ref,
+            config.dataset_ref,
             path=str(output_path),
             unzip=True
         )
@@ -29,6 +31,3 @@ def download_kaggle_dataset(dataset_ref: str,output_dir: str = "src/data/raw"):
 
     print(f"Dataset downloaded successfully into {output_path}")
 
-
-DATASET_REF = "marianaprezgonzlez/ibm-hr-analytics-employee-attrition-and-performance"
-download_kaggle_dataset(DATASET_REF)

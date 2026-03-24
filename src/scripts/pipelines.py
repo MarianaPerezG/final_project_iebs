@@ -1,6 +1,6 @@
 from pathlib import Path
-from skill_matrix.builder import SkillMatrixBuilder
-from skill_matrix.schemas import SkillMatrixConfig
+from builder import SkillMatrixBuilder
+from schemas import SkillMatrixConfig
 
 import pandas as pd
 
