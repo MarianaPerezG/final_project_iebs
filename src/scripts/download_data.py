@@ -1,4 +1,5 @@
 from pathlib import Path
+from venv import logger
 
 from dotenv import load_dotenv
 import kaggle
@@ -15,7 +16,7 @@ def download_kaggle_dataset(config: DownloadConfig):
     
     existing_csvs = list(output_path.rglob("*.csv"))
     if existing_csvs:
-        print(f"Dataset already exists at {existing_csvs[0]}. Skipping download.")
+        logger.info(f"Dataset already exists at {existing_csvs[0]}. Skipping download.")
         return
 
     load_dotenv()
@@ -35,5 +36,5 @@ def download_kaggle_dataset(config: DownloadConfig):
         raise RuntimeError(f"Error downloading dataset: {e}")
 
 
-    print(f"Dataset downloaded successfully into {output_path}")
+    logger.info(f"Dataset downloaded successfully into {output_path}")
 

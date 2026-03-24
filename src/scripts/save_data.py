@@ -1,4 +1,5 @@
 from pathlib import Path
+from venv import logger
 import pandas as pd
 
 
@@ -13,5 +14,5 @@ def save_dataframe_to_csv(df: pd.DataFrame, output_path: str) -> Path:
     except Exception as e:
         raise ValueError(f"Error saving CSV to {path}: {e}")
 
-    print(f"CSV saved successfully at {path}")
+    logger.info(f"CSV saved successfully at {path}")
     return path

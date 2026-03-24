@@ -11,3 +11,4 @@ def create_skill_matrix_config():
         dataset_path=SKILL_MATRIX_CONFIGURATION["DATASET_PATH"],
         output_path=SKILL_MATRIX_CONFIGURATION["OUTPUT_PATH"]
     )
+    
