@@ -132,9 +132,9 @@ Cada familia ocupacional debe tener una competencia esencial (5) o, en algunos c
 <br>
 
 $$
-\operatorname{score}(r, s) = \operatorname{clamp}_{[0,5]}\bigl(B(f(r), s) + A(r, s)\bigr),
+\text{score}(r, s) = \text{clamp}_{[0,5]}\bigl(B(f(r), s) + A(r, s)\bigr),
 \quad
-\operatorname{clamp}_{[0,5]}(x) = \max\bigl(0, \min(5, x)\bigr)
+\text{clamp}_{[0,5]}(x) = \max\bigl(0, \min(5, x)\bigr)
 $$
 
 <br>
