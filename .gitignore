@@ -4,6 +4,13 @@ __pycache__/
 .venv
 .ipynb_checkpoints/
 
+# Tools
+.mypy_cache/
+.ropeproject/
+
+# Config
+pyproject.toml
+
 # Environment variables
 .env
 

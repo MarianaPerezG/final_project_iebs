@@ -6,5 +6,5 @@ GLOBAL_SKILLS = [
     "project_management",
     "software_data",
     "systems",
-    "domain_expertise"
+    "domain_expertise",
 ]
