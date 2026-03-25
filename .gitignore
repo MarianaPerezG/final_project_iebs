@@ -19,4 +19,4 @@ kaggle.json
 .kaggle/
 
 # Data
-src/data/raw/*
+*.csv

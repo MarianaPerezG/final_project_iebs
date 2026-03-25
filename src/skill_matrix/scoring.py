@@ -2,8 +2,8 @@ import re
 
 import pandas as pd
 
-from data.global_skills import GLOBAL_SKILLS
-from data.scoring_rules import (
+from config.global_skills import GLOBAL_SKILLS
+from config.scoring_rules import (
     FAMILY_SCORES,
     MAX_SKILL_SCORE,
     MIN_SKILL_SCORE,

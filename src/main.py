@@ -2,10 +2,11 @@ import logging
 import sys
 from pathlib import Path
 
-# Add project root to Python path
-sys.path.insert(0, str(Path(__file__).parent.parent))
-
 from scripts.pipelines import run_pipeline
+
+
+# Add the src directory to the Python path
+sys.path.append(str(Path(__file__).parent))
 
 if __name__ == "__main__":
 
