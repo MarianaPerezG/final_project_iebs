@@ -4,7 +4,7 @@ from data.global_skills import GLOBAL_SKILLS
 def _score(**skills: int) -> dict[str, int]:
     unknown_skills = sorted(set(skills) - set(GLOBAL_SKILLS))
     if unknown_skills:
-        raise ValueError(f"Unknown skills: {unknown_skills}")
+        raise ValueError(f"unknown skills: {unknown_skills}")
 
     return {skill: skills.get(skill, 0) for skill in GLOBAL_SKILLS}
 

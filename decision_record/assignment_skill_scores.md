@@ -118,12 +118,12 @@ Roles incluidos en *IBM HR Analytics Employee Attrition & Performance*:
 
 El grado de relevancia de una competencia, ajustado a un rol dado, se expresa en una escala ordinal de 0 a 5.
 
-  - 0: nula
-  - 1: tangencial
-  - 2: complementaria
-  - 3: significativa
-  - 4: determinante
-  - 5: esencial
+  - **0** (nula)
+  - **1** (tangencial)
+  - **2** (complementaria)
+  - **3** (significativa)
+  - **4** (determinante)
+  - **5** (esencial)
 
 <br>
 
@@ -132,9 +132,9 @@ Cada familia ocupacional debe tener una competencia esencial (5) o, en algunos c
 <br>
 
 $$
-\text{score}(r, s) = \text{clamp}_{[0,5]}\bigl(B(f(r), s) + A(r, s)\bigr),
+\text{score}(r, s) = \text{clamp}_{[0, 5]}\bigl(B(f(r), s) + A(r, s)\bigr),
 \quad
-\text{clamp}_{[0,5]}(x) = \max\bigl(0, \min(5, x)\bigr)
+\text{clamp}_{[0, 5]}(x) = \max\bigl(0, \min(5, x)\bigr)
 $$
 
 <br>
@@ -164,9 +164,9 @@ Vector base de cada familia:
 
 Ajustes semánticos por título:
 
-  - −1: negativo
-  - +1: medio
-  - +2: fuerte
+  - **−1** (negativo)
+  - **+1** (medio)
+  - **+2** (fuerte)
 
 <br>
 
