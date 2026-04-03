@@ -13,3 +13,5 @@ dependencies:
   - pip:
       - kaggle
       - python-dotenv
+      - black
+      - pre-commit
