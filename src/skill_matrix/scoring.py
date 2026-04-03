@@ -1,12 +1,13 @@
 import re
 
-from data.adjustment_rules import (HARD_SKILLS, HIGH_WEIGHT, LOW_WEIGHT,
-                                   MAX_EDUCATION, MAX_PERFORMANCE,
-                                   MIN_EDUCATION, MIN_PERFORMANCE, SOFT_SKILLS)
-from data.global_skills import GLOBAL_SKILLS
-from data.scoring_rules import (FAMILY_SCORES, MAX_SKILL_SCORE,
-                                MIN_SKILL_SCORE, ROLE_TO_FAMILY,
-                                SEMANTIC_ADJUSTMENTS)
+from config.adjustment_rules import (HARD_SKILLS, HIGH_WEIGHT, LOW_WEIGHT,
+                                     MAX_EDUCATION, MAX_PERFORMANCE,
+                                     MIN_EDUCATION, MIN_PERFORMANCE,
+                                     SOFT_SKILLS)
+from config.global_skills import GLOBAL_SKILLS
+from config.scoring_rules import (FAMILY_SCORES, MAX_SKILL_SCORE,
+                                  MIN_SKILL_SCORE, ROLE_TO_FAMILY,
+                                  SEMANTIC_ADJUSTMENTS)
 
 
 def _clamp_score(value: int | float) -> int | float:

@@ -1,4 +1,4 @@
-from data.global_skills import GLOBAL_SKILLS
+from config.global_skills import GLOBAL_SKILLS
 
 LOW_WEIGHT = 0.10
 HIGH_WEIGHT = 0.20
