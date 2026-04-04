@@ -7,7 +7,7 @@ DATASETS_CONFIGURATION = {
 
 SKILL_MATRIX_CONFIGURATION = {
     "DATASET_PATH": DATASETS_CONFIGURATION["SKILL_MATRIX_OUTPUT_PATH"],
-    "OUTPUT_PATH": "data/processed/skill_matrix_result.csv",
+    "OUTPUT_PATH": "data/processed/skill_matrix_processed.csv",
     "FINAL_SKILL_MATRIX_OUTPUT_PATH": "data/final/skill_matrix_result.csv",
 }
 
