@@ -1,13 +1,23 @@
 import re
 
-from config.adjustment_rules import (HARD_SKILLS, HIGH_WEIGHT, LOW_WEIGHT,
-                                     MAX_EDUCATION, MAX_PERFORMANCE,
-                                     MIN_EDUCATION, MIN_PERFORMANCE,
-                                     SOFT_SKILLS)
+from config.adjustment_rules import (
+    HARD_SKILLS,
+    HIGH_WEIGHT,
+    LOW_WEIGHT,
+    MAX_EDUCATION,
+    MAX_PERFORMANCE,
+    MIN_EDUCATION,
+    MIN_PERFORMANCE,
+    SOFT_SKILLS,
+)
 from config.global_skills import GLOBAL_SKILLS
-from config.scoring_rules import (FAMILY_SCORES, MAX_SKILL_SCORE,
-                                  MIN_SKILL_SCORE, ROLE_TO_FAMILY,
-                                  SEMANTIC_ADJUSTMENTS)
+from config.scoring_rules import (
+    FAMILY_SCORES,
+    MAX_SKILL_SCORE,
+    MIN_SKILL_SCORE,
+    ROLE_TO_FAMILY,
+    SEMANTIC_ADJUSTMENTS,
+)
 
 
 def _clamp_score(value: int | float) -> int | float:
@@ -70,7 +80,7 @@ def _build_multiplier_vector(education: int, performance: int) -> dict[str, floa
     return multiplier_vector
 
 
-def score_role(role: str) -> dict[str, int]:
+def _score_role(role: str) -> dict[str, int]:
     if role not in ROLE_TO_FAMILY:
         raise ValueError(f"unknown role: {role!r}")
 
@@ -84,10 +94,12 @@ def score_role(role: str) -> dict[str, int]:
 
 
 def score_employee(role: str, education: int, performance: int) -> dict[str, float]:
-    role_scores = score_role(role)
+    role_scores = _score_role(role)
     multiplier_vector = _build_multiplier_vector(education, performance)
 
     return {
-        skill: _clamp_score(role_scores[skill] * multiplier_vector[skill])
+        skill: format(
+            _clamp_score(role_scores[skill] * multiplier_vector[skill]), ".2f"
+        )
         for skill in GLOBAL_SKILLS
     }

@@ -8,6 +8,7 @@ import pandas as pd
 
 from scripts.create_skill_matrix import create_skill_matrix
 from scripts.download_data import download_kaggle_datasets
+from scripts.create_database import create_database
 
 
 def run_pipeline():
@@ -41,6 +42,10 @@ def run_pipeline():
                 ],
             ),
         )
+
+        create_database()
+        logging.info("Database created successfully.")
+
         logging.info("Pipeline executed successfully.")
     except Exception as e:
         logging.error(f"Error occurred while running pipeline: {e}")

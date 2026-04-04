@@ -33,7 +33,7 @@ def create_skill_matrix(
         raise ValueError(f"Error reading CSV: {e}")
 
     logger.info(f"Dataset loaded successfully from: {dataset_path}")
-    builder = SkillMatrixBuilder(global_skills=list(global_skills), transformers=[])
+    builder = SkillMatrixBuilder(global_skills=list(global_skills))
 
     result = builder.build(df)
 
