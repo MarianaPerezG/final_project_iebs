@@ -38,4 +38,10 @@ def create_skill_matrix(
     result = builder.build(df)
 
     save_dataframe_to_csv(result.matrix, config.output_path)
-    logger.info(f"Skill matrix saved to: {config.output_path}")
+    logger.info(f"Processed matrix with scoring saved to: {config.output_path}")
+
+    columns = ["EmployeeNumber"] + list(global_skills)
+    skill_matrix = result.matrix[columns]
+
+    save_dataframe_to_csv(skill_matrix, config.final_output_path)
+    logger.info(f"Final skill matrix saved to: {config.final_output_path}")

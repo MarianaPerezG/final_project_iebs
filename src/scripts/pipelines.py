@@ -36,6 +36,9 @@ def run_pipeline():
             config=SkillMatrixConfig(
                 dataset_path=SKILL_MATRIX_CONFIGURATION["DATASET_PATH"],
                 output_path=SKILL_MATRIX_CONFIGURATION["OUTPUT_PATH"],
+                final_output_path=SKILL_MATRIX_CONFIGURATION[
+                    "FINAL_SKILL_MATRIX_OUTPUT_PATH"
+                ],
             ),
         )
         logging.info("Pipeline executed successfully.")

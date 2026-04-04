@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional
+from typing import List
 import pandas as pd
 
 from schemas import MatrixBuildResult
@@ -29,6 +29,7 @@ class SkillMatrixBuilder:
         else:
             raise ValueError("JobRole column is required for scoring")
 
+        # Si ya los scores vienen transformados, quiar los transformadores
         applied_transformers = []
         for transformer in self.transformers:
             matrix = transformer.apply(matrix, df)
