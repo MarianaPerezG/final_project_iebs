@@ -6,6 +6,7 @@ import pandas as pd
 
 from schemas import MatrixBuildResult
 from skill_matrix.transformers.transformers import BaseMatrixTransformer
+from skill_matrix import scoring
 
 
 @dataclass
@@ -20,6 +21,13 @@ class SkillMatrixBuilder:
                 df[skill] = pd.NA
 
         matrix = df.copy()
+
+        if "JobRole" in df.columns:
+            scores = matrix["JobRole"].apply(scoring.score_role)
+            scores_df = pd.DataFrame(scores.tolist(), index=matrix.index)
+            matrix[self.global_skills] = scores_df[self.global_skills]
+        else:
+            raise ValueError("JobRole column is required for scoring")
 
         applied_transformers = []
         for transformer in self.transformers:
