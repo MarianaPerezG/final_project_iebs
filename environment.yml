@@ -10,6 +10,7 @@ dependencies:
   - numpy
   - pandas
   - python-dateutil
+  - scikit-learn=1.4.2
   - pip:
       - kaggle
       - python-dotenv

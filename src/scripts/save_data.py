@@ -15,4 +15,6 @@ def save_dataframe_to_csv(df: pd.DataFrame, output_path: str) -> Path:
         raise ValueError(f"Error saving CSV to {path}: {e}")
 
     logger.info(f"CSV saved successfully at {path}")
+
+    logger.info(f"First row of the DataFrame: {df.head(1).iloc[0].to_dict()}")
     return path

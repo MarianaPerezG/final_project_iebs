@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import List
 from venv import logger
 
 from dotenv import load_dotenv
@@ -9,10 +10,11 @@ import os
 from schemas import DownloadConfig
 
 
-def download_kaggle_dataset(config: DownloadConfig):
+def download_kaggle_datasets(configs: list[DownloadConfig]):
 
-    output_path = Path(config.output_path)
-    output_path.mkdir(parents=True, exist_ok=True)
+    for config in configs:
+        output_path = Path(config.output_path)
+        output_path.mkdir(parents=True, exist_ok=True)
 
     existing_csvs = list(output_path.rglob("*.csv"))
     if existing_csvs:

@@ -3,7 +3,7 @@ from venv import logger
 
 import pandas as pd
 
-from builder import MatrixBuilder
+from skill_matrix.builder import SkillMatrixBuilder
 from schemas import SkillMatrixConfig
 from scripts.save_data import save_dataframe_to_csv
 
@@ -33,7 +33,7 @@ def create_skill_matrix(
         raise ValueError(f"Error reading CSV: {e}")
 
     logger.info(f"Dataset loaded successfully from: {dataset_path}")
-    builder = MatrixBuilder(global_skills=list(global_skills), transformers=[])
+    builder = SkillMatrixBuilder(global_skills=list(global_skills), transformers=[])
 
     result = builder.build(df)
 

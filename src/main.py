@@ -4,8 +4,6 @@ from pathlib import Path
 
 from scripts.pipelines import run_pipeline
 
-
-# Add the src directory to the Python path
 sys.path.append(str(Path(__file__).parent))
 
 if __name__ == "__main__":

@@ -9,7 +9,7 @@ from skill_matrix.transformers.transformers import BaseMatrixTransformer
 
 
 @dataclass
-class MatrixBuilder:
+class SkillMatrixBuilder:
     global_skills: List[str]
     transformers: List[BaseMatrixTransformer] = field(default_factory=list)
 

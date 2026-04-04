@@ -47,3 +47,7 @@ https://www.kaggle.com/datasets/pavansubhasht/ibm-hr-analytics-attrition-dataset
 
 Version:
 v1.0 (snapshot taken on 2026-03-23)
+
+# Next Steps
+
+- Regression model with KNN for aggregation in roles and scoring rules
