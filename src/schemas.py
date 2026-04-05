@@ -39,3 +39,14 @@ class TableConfig:
 class DatabaseConfig:
     tables: List[TableConfig]
     db_path: str = "src/config/database.db"
+
+
+@dataclass
+class JobPosting:
+    title: str
+    associated_skills: List[str]
+
+
+@dataclass
+class JobPostingsResponse:
+    job_postings: List[JobPosting]

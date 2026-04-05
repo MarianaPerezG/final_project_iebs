@@ -3,7 +3,7 @@ DATASETS_CONFIGURATION = {
     "SKILL_MATRIX_OUTPUT_PATH": "data/raw/skill_matrix.csv",
     "TARGET_DEMAND_SKILL_MATRIX_DATASET_REF": "marianaprezgonzlez/linkedin-job-postings-2023-2024",
     "TARGET_DEMAND_SKILL_MATRIX_OUTPUT_PATH": "data/raw/target_demand_skill_matrix.csv",
-    "COURSE_RECOMMENDATION_DATASET_REF": "/marianaprezgonzlez/multi-platform-online-courses-dataset",
+    "COURSE_RECOMMENDATION_DATASET_REF": "marianaprezgonzlez/multi-platform-online-courses-dataset",
     "COURSE_RECOMMENDATION_OUTPUT_PATH": "data/raw/course_recommendation.csv",
 }
 
