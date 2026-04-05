@@ -29,3 +29,15 @@ class SkillMatrixConfig:
 class TargetSkillMatrixConfig:
     dataset_path: str
     output_path: str
+
+
+@dataclass
+class TableConfig:
+    name: str
+    csv_path: str
+
+
+@dataclass
+class DatabaseConfig:
+    tables: List[TableConfig]
+    db_path: str = "src/config/database.db"

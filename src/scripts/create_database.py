@@ -4,31 +4,89 @@ import sqlite3
 import pandas as pd
 
 from config.datasets import SKILL_MATRIX_CONFIGURATION
+from config.global_skills import GLOBAL_SKILLS
+from schemas import DatabaseConfig
 
 
-def create_database():
-    DB_PATH = "src/config/database.db"
+def create_database(config: DatabaseConfig):
+    db_path = config.db_path
 
-    csv_path = Path(SKILL_MATRIX_CONFIGURATION["FINAL_SKILL_MATRIX_OUTPUT_PATH"])
+    with sqlite3.connect(db_path) as conn:
+        cursor = conn.cursor()
 
-    skill_matrix = pd.read_csv(csv_path)
+        for table_config in config.tables:
+            table_name = table_config.name
+            csv_path = Path(table_config.csv_path)
 
-    conn = sqlite3.connect(DB_PATH)
+            if not csv_path.exists():
+                raise FileNotFoundError(
+                    f"CSV not found for table '{table_name}': {csv_path}"
+                )
 
-    skill_matrix.to_sql("skills_matrix", conn, if_exists="replace", index=False)
+            if csv_path.suffix.lower() != ".csv":
+                raise ValueError(
+                    f"File must be CSV for table '{table_name}': {csv_path}"
+                )
 
-    cursor = conn.cursor()
+            df = pd.read_csv(csv_path)
 
-    cursor.execute(
+            # Validate required columns only for skills_matrix table
+            if table_name == "skills_matrix":
+                required_columns = ["EmployeeNumber"] + list(GLOBAL_SKILLS)
+                missing_columns = [
+                    col for col in required_columns if col not in df.columns
+                ]
+                if missing_columns:
+                    raise ValueError(
+                        f"Missing required columns in {table_name}: {missing_columns}"
+                    )
+
+            cursor.execute(
+                """
+                SELECT name
+                FROM sqlite_master
+                WHERE type='table' AND name=?;
+            """,
+                (table_name,),
+            )
+            table_exists = cursor.fetchone() is not None
+
+            if table_exists:
+                cursor.execute(f"SELECT COUNT(*) FROM {table_name};")
+                row_count = cursor.fetchone()[0]
+
+                if row_count > 0:
+                    logging.info(
+                        "Table '%s' already exists with %d rows. Skipping load.",
+                        table_name,
+                        row_count,
+                    )
+                else:
+                    logging.info(
+                        "Table '%s' exists but is empty. Loading data.", table_name
+                    )
+                    df.to_sql(table_name, conn, if_exists="append", index=False)
+            else:
+                logging.info(
+                    "Table '%s' does not exist. Creating and loading data.", table_name
+                )
+                df.to_sql(table_name, conn, if_exists="fail", index=False)
+
+        cursor.execute(
+            """
+            SELECT name
+            FROM sqlite_master
+            WHERE type='table';
         """
-        SELECT name FROM sqlite_master
-        WHERE type='table';
-    """
-    )
+        )
+        tables = [row[0] for row in cursor.fetchall()]
+        logging.info("Tables in database: %s", tables)
 
-    tables = [row[0] for row in cursor.fetchall()]
+        for table in tables:
+            if not table.isidentifier():
+                continue
+            cursor.execute(f"SELECT COUNT(*) FROM {table};")
+            count = cursor.fetchone()[0]
+            logging.info("Table '%s' has %d records", table, count)
 
-    logging.info(f"Tables in database: {tables}")
-    conn.close()
-
-    print(f"Database created at: {DB_PATH}")
+    logging.info("Database ready at: %s", db_path)

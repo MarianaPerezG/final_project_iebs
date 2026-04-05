@@ -2,7 +2,7 @@ import logging
 
 from config.datasets import DATASETS_CONFIGURATION, SKILL_MATRIX_CONFIGURATION
 from config.global_skills import GLOBAL_SKILLS
-from schemas import DownloadConfig, SkillMatrixConfig
+from schemas import DatabaseConfig, DownloadConfig, SkillMatrixConfig, TableConfig
 
 import pandas as pd
 
@@ -43,7 +43,17 @@ def run_pipeline():
             ),
         )
 
-        create_database()
+        create_database(
+            config=DatabaseConfig(
+                tables=[
+                    TableConfig(
+                        name="skills_matrix",
+                        csv_path="data/processed/skill_matrix_result.csv",
+                    )
+                ],
+                db_path="src/config/database.db",
+            )
+        )
         logging.info("Database created successfully.")
 
         logging.info("Pipeline executed successfully.")
