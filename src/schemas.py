@@ -20,9 +20,7 @@ class DownloadConfig:
 @dataclass
 class SkillMatrixConfig:
     dataset_path: str
-    output_path: str
     final_output_path: str
-    transformers: list[Any] = field(default_factory=list)
 
 
 @dataclass

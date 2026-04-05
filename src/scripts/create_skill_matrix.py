@@ -24,8 +24,8 @@ def create_skill_matrix(
     if dataset.suffix.lower() != ".csv":
         raise ValueError(f"File must be CSV: {dataset_path}")
 
-    if config.output_path is None:
-        raise ValueError(f"Output_path is required")
+    if config.final_output_path is None:
+        raise ValueError(f"Final output path is required")
 
     try:
         df = pd.read_csv(dataset)
@@ -37,8 +37,8 @@ def create_skill_matrix(
 
     result = builder.build(df)
 
-    save_dataframe_to_csv(result.matrix, config.output_path)
-    logger.info(f"Processed matrix with scoring saved to: {config.output_path}")
+    save_dataframe_to_csv(result.matrix, config.final_output_path)
+    logger.info(f"Processed matrix with scoring saved to: {config.final_output_path}")
 
     columns = ["EmployeeNumber"] + list(global_skills)
     skill_matrix = result.matrix[columns]

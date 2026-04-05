@@ -20,7 +20,6 @@ kaggle.json
 
 # Data
 data/raw/*.csv
-data/processed/*.csv
 data/final/*.csv
 
 #Database

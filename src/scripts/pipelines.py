@@ -36,7 +36,6 @@ def run_pipeline():
             global_skills=GLOBAL_SKILLS,
             config=SkillMatrixConfig(
                 dataset_path=SKILL_MATRIX_CONFIGURATION["DATASET_PATH"],
-                output_path=SKILL_MATRIX_CONFIGURATION["OUTPUT_PATH"],
                 final_output_path=SKILL_MATRIX_CONFIGURATION[
                     "FINAL_SKILL_MATRIX_OUTPUT_PATH"
                 ],
@@ -48,7 +47,9 @@ def run_pipeline():
                 tables=[
                     TableConfig(
                         name="skills_matrix",
-                        csv_path="data/processed/skill_matrix_result.csv",
+                        csv_path=SKILL_MATRIX_CONFIGURATION[
+                            "FINAL_SKILL_MATRIX_OUTPUT_PATH"
+                        ],
                     )
                 ],
                 db_path="src/config/database.db",
