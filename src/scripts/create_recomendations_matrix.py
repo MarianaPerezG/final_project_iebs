@@ -54,12 +54,23 @@ def create_recommendations_matrix(config: CourseSkillsMatrixConfig):
         ]
         mapped_skills = skill_mapper.map_skills(normalized_skills)
 
-        # prepare subject string (course.subject may be a list)
-        subj = course.subject
-        if isinstance(subj, (list, tuple)):
-            subject_str = " | ".join([str(s).strip() for s in subj if s])
-        else:
-            subject_str = str(subj or "")
+        skills_conf = skill_mapper.score_skills(normalized_skills)
+
+        subjects = course.subject
+
+        subject_conf: dict = {g: 0.0 for g in skill_mapper.global_skills}
+        for item in subjects:
+            item_norm = SkillNormalizer.normalize(item)
+            sc = skill_mapper.score_text(item_norm)
+            for g, v in sc.items():
+                subject_conf[g] = max(subject_conf.get(g, 0.0), v)
+
+        title_norm = SkillNormalizer.normalize(course.title or "")
+        title_conf = (
+            skill_mapper.score_text(title_norm)
+            if title_norm
+            else {g: 0.0 for g in skill_mapper.global_skills}
+        )
 
         course_data.append(
             {
@@ -67,7 +78,10 @@ def create_recommendations_matrix(config: CourseSkillsMatrixConfig):
                 "original_skills": ", ".join(course.associated_skills),
                 "mapped_skills": mapped_skills,
                 "level": course.level,
-                "subject": subject_str,
+                "subject": subjects,
+                "skills_conf": skills_conf,
+                "subject_conf": subject_conf,
+                "title_conf": title_conf,
             }
         )
 
@@ -78,16 +92,30 @@ def create_recommendations_matrix(config: CourseSkillsMatrixConfig):
     _save_unmapped_skills_report(skill_mapper, config.report_path)
 
     matrix_data = []
+    WEIGHT_SKILL = 0.7
+    WEIGHT_SUBJ = 0.2
+    WEIGHT_TITLE = 0.1
+
     for course in course_data:
         row = {
             "course_title": course["course_title"],
             "level": course.get("level", ""),
             "subject": course.get("subject", ""),
-            **{
-                skill: (1 if skill in course["mapped_skills"] else 0)
-                for skill in GLOBAL_SKILLS
-            },
         }
+
+        for skill in GLOBAL_SKILLS:
+            skill_score = float(course.get("skills_conf", {}).get(skill, 0.0))
+            subj_score = float(course.get("subject_conf", {}).get(skill, 0.0))
+            title_score = float(course.get("title_conf", {}).get(skill, 0.0))
+
+            combined = (
+                WEIGHT_SKILL * skill_score
+                + WEIGHT_SUBJ * subj_score
+                + WEIGHT_TITLE * title_score
+            )
+            combined = max(0.0, min(1.0, combined))
+            row[skill] = round(combined, 2)
+
         matrix_data.append(row)
 
     course_skills_matrix = pd.DataFrame(matrix_data)

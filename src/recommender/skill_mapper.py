@@ -35,7 +35,7 @@ class SkillMapper:
 
         return best_match, best_score / 100
 
-    def map_skill(self, api_skill: str) -> str:
+    def _map_skill(self, api_skill: str) -> str:
         if api_skill in self.mapping_cache:
             return self.mapping_cache[api_skill]
 
@@ -52,10 +52,34 @@ class SkillMapper:
     def map_skills(self, api_skills: List[str]) -> List[str]:
         mapped = []
         for skill in api_skills:
-            mapped_skill = self.map_skill(skill)
+            mapped_skill = self._map_skill(skill)
             if mapped_skill and mapped_skill not in mapped:
                 mapped.append(mapped_skill)
         return mapped
+
+    def score_skills(self, api_skills: List[str]) -> Dict[str, float]:
+        scores: Dict[str, float] = {g: 0.0 for g in self.global_skills}
+        for api_skill in api_skills:
+            best_match, confidence = self._get_best_match(api_skill)
+            if best_match is not None:
+                scores[best_match] = max(scores.get(best_match, 0.0), confidence)
+        return scores
+
+    def score_text(self, text: str) -> Dict[str, float]:
+        """Score an arbitrary text (title/subject) against all global skills.
+        Returns a dict global_skill -> confidence (0..1)."""
+        text_norm = text.lower().strip()
+        scores: Dict[str, float] = {}
+        for global_skill in self.global_skills:
+            gs_lower = global_skill.lower()
+            sc = max(
+                fuzz.ratio(text_norm, gs_lower),
+                fuzz.partial_ratio(text_norm, gs_lower),
+                fuzz.token_set_ratio(text_norm, gs_lower),
+                fuzz.token_sort_ratio(text_norm, gs_lower),
+            )
+            scores[global_skill] = sc / 100.0
+        return scores
 
     def get_mapping_report(self) -> Dict:
         return {
