@@ -61,3 +61,15 @@ https://www.kaggle.com/datasets/marianaprezgonzlez/multi-platform-online-courses
 # Next Steps
 
 - Regression model with KNN for aggregation in roles and scoring rules
+
+
+## Web app 
+
+Run the app:
+
+```bash
+conda env update --file environment.yml --prune   # si no has creado o quieres actualizar
+conda activate proyecto_final_iebs
+streamlit run src/web/app.py
+```
+

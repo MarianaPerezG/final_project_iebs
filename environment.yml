@@ -11,9 +11,11 @@ dependencies:
   - pandas
   - python-dateutil
   - scikit-learn=1.4.2
+  - streamlit
   - pip:
       - kaggle
       - python-dotenv
       - black
       - pre-commit
       - rapidfuzz
+      - streamlit-aggrid
