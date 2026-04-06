@@ -35,5 +35,5 @@ COURSE_RECOMMENDATIONS_CONFIGURATION = {
     "GAP_MATRIX_PATH": "data/final/gap_matrix_result.csv",
     "COURSE_MATRIX_PATH": "data/final/course_skills_matrix.csv",
     "MODEL_PATH": "models/trained/course_recommendations_model.pkl",
-    "BATCH_RECOMMENDATIONS_PATH": "data/final/course_recommendations.csv",
+    "CURRENT_EMPLOYEES_RECOMMENDATIONS_PATH": "data/final/course_recommendations.csv",
 }

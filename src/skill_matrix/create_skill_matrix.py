@@ -41,6 +41,8 @@ def create_skill_matrix(
     logger.info(f"Processed matrix with scoring saved to: {config.final_output_path}")
 
     columns = ["EmployeeNumber"]
+    if "JobRole" in result.matrix.columns:
+        columns.append("JobRole")
     if "JobLevel" in result.matrix.columns:
         columns.append("JobLevel")
     columns += list(global_skills)

@@ -19,14 +19,14 @@ from api.singleton import get_courses_api
 from skill_matrix.create_skill_matrix import create_skill_matrix
 from scripts.download_data import download_kaggle_datasets
 from scripts.create_database import create_database
-from recommender.create_recommendations_matrix import create_recommendations_matrix
-from recommender.recommend_courses import recommend_courses
+from recommender.create_courses_matrix import create_courses_matrix
+from recommender.create_recommendation_model import generate_recommendations
 
 
 def run_pipeline():
 
     try:
-        logging.info("Starting dataset download...")
+        logging.info("Starting dataset download")
         download_kaggle_datasets(
             [
                 DownloadConfig(
@@ -52,7 +52,7 @@ def run_pipeline():
             ]
         )
 
-        logging.info("Dataset download completed. Creating skill matrix...")
+        logging.info("Dataset download completed. Creating skill matrix")
 
         create_skill_matrix(
             global_skills=GLOBAL_SKILLS,
@@ -83,41 +83,44 @@ def run_pipeline():
                 db_path="src/config/database.db",
             )
         )
-        logging.info("Database created successfully.")
+        logging.info("Database created successfully")
 
         logging.info("Fetching courses from API...")
         api = get_courses_api()
         courses = api.get_courses()
         logging.info(f"Retrieved {len(courses.courses)} courses from API")
 
-        config = CourseSkillsMatrixConfig(
-            courses_response=courses,
-            output_path=RECOMMENDATION_MATRIX_CONFIGURATION[
-                "FINAL_RECOMMENDATION_MATRIX_OUTPUT_PATH"
-            ],
-            report_path=RECOMMENDATION_MATRIX_CONFIGURATION[
-                "UNMAPPED_SKILLS_REPORT_PATH"
-            ],
-            mapping_threshold=0.75,
+        create_courses_matrix(
+            config=CourseSkillsMatrixConfig(
+                courses_response=courses,
+                output_path=RECOMMENDATION_MATRIX_CONFIGURATION[
+                    "FINAL_RECOMMENDATION_MATRIX_OUTPUT_PATH"
+                ],
+                report_path=RECOMMENDATION_MATRIX_CONFIGURATION[
+                    "UNMAPPED_SKILLS_REPORT_PATH"
+                ],
+                mapping_threshold=0.75,
+            )
         )
-        create_recommendations_matrix(config)
 
         logging.info("Generating course recommendations...")
-        recommendation_config = RecommendationConfig(
-            gap_matrix_path=COURSE_RECOMMENDATIONS_CONFIGURATION["GAP_MATRIX_PATH"],
-            course_matrix_path=COURSE_RECOMMENDATIONS_CONFIGURATION[
-                "COURSE_MATRIX_PATH"
-            ],
-            output_path=COURSE_RECOMMENDATIONS_CONFIGURATION["MODEL_PATH"],
-            global_skills=list(GLOBAL_SKILLS),
-        )
-        # Add batch recommendations path as attribute
-        recommendation_config.batch_recs_path = COURSE_RECOMMENDATIONS_CONFIGURATION[
-            "BATCH_RECOMMENDATIONS_PATH"
-        ]
-        recommend_courses(recommendation_config)
 
-        logging.info("Pipeline executed successfully.")
+        generate_recommendations(
+            config=RecommendationConfig(
+                gap_matrix_path=COURSE_RECOMMENDATIONS_CONFIGURATION["GAP_MATRIX_PATH"],
+                course_matrix_path=COURSE_RECOMMENDATIONS_CONFIGURATION[
+                    "COURSE_MATRIX_PATH"
+                ],
+                model_output_path=COURSE_RECOMMENDATIONS_CONFIGURATION["MODEL_PATH"],
+                global_skills=list(GLOBAL_SKILLS),
+                recommendations_output_path=COURSE_RECOMMENDATIONS_CONFIGURATION[
+                    "CURRENT_EMPLOYEES_RECOMMENDATIONS_PATH"
+                ],
+                topk=3,
+            )
+        )
+
+        logging.info("Pipeline executed successfully")
     except Exception as e:
         logging.error(f"Error occurred while running pipeline: {e}")
         raise

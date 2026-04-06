@@ -35,7 +35,7 @@ def _save_unmapped_skills_report(skill_mapper: SkillMapper, report_path: str):
     logging.info(f"Unmapped skills report saved to: {path.absolute()}")
 
 
-def create_recommendations_matrix(config: CourseSkillsMatrixConfig):
+def create_courses_matrix(config: CourseSkillsMatrixConfig):
 
     courses_response = config.courses_response
     logging.info(
@@ -133,7 +133,7 @@ def create_recommendations_matrix(config: CourseSkillsMatrixConfig):
         )
     else:
         save_dataframe_to_csv(filtered_matrix, config.output_path)
-        logging.info(f"Final recommendation matrix saved to: {config.output_path}")
+        logging.info(f"Final course matrix saved to: {config.output_path}")
         logging.info(
             f"Saved {len(filtered_matrix)} courses out of {len(course_skills_matrix)}"
         )

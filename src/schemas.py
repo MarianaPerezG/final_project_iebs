@@ -72,5 +72,7 @@ class CourseSkillsMatrixConfig:
 class RecommendationConfig:
     gap_matrix_path: str
     course_matrix_path: str
-    output_path: str
+    model_output_path: str
+    recommendations_output_path: str
     global_skills: List[str]
+    topk: int
