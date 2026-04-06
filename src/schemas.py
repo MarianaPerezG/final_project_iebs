@@ -44,6 +44,8 @@ class DatabaseConfig:
 @dataclass
 class Course:
     title: str
+    subject: List[str]
+    level: str
     associated_skills: List[str]
 
 

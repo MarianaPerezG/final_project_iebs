@@ -54,11 +54,20 @@ def create_recommendations_matrix(config: CourseSkillsMatrixConfig):
         ]
         mapped_skills = skill_mapper.map_skills(normalized_skills)
 
+        # prepare subject string (course.subject may be a list)
+        subj = course.subject
+        if isinstance(subj, (list, tuple)):
+            subject_str = " | ".join([str(s).strip() for s in subj if s])
+        else:
+            subject_str = str(subj or "")
+
         course_data.append(
             {
                 "course_title": course.title,
                 "original_skills": ", ".join(course.associated_skills),
                 "mapped_skills": mapped_skills,
+                "level": course.level,
+                "subject": subject_str,
             }
         )
 
@@ -72,6 +81,8 @@ def create_recommendations_matrix(config: CourseSkillsMatrixConfig):
     for course in course_data:
         row = {
             "course_title": course["course_title"],
+            "level": course.get("level", ""),
+            "subject": course.get("subject", ""),
             **{
                 skill: (1 if skill in course["mapped_skills"] else 0)
                 for skill in GLOBAL_SKILLS

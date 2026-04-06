@@ -1,6 +1,7 @@
 import sqlite3
 import json
 import logging
+import re
 from schemas import Course, CoursesResponse
 
 
@@ -18,7 +19,7 @@ class MockCourseAPI:
                 cursor = conn.cursor()
 
                 cursor.execute(
-                    "SELECT title, associatedskills FROM course_recommendation"
+                    "SELECT title, subject, level, associatedskills FROM course_recommendation"
                 )
                 rows = cursor.fetchall()
 
@@ -29,7 +30,13 @@ class MockCourseAPI:
                 courses = []
                 for row in rows:
                     title = row["title"]
+                    subject_raw = row["subject"] or ""
+                    level = row["level"]
                     skills_raw = row["associatedskills"]
+
+                    cleaned = re.sub(r"\s*&\s*", ",", str(subject_raw))
+                    cleaned = re.sub(r"[|;/]", ",", cleaned)
+                    subject_list = [s.strip() for s in cleaned.split(",") if s.strip()]
 
                     try:
                         associated_skills = json.loads(skills_raw)
@@ -41,7 +48,12 @@ class MockCourseAPI:
                         ]
 
                     courses.append(
-                        Course(title=title, associated_skills=associated_skills)
+                        Course(
+                            title=title,
+                            subject=subject_list,
+                            level=level,
+                            associated_skills=associated_skills,
+                        )
                     )
 
                 logging.info(f"Loaded {len(courses)} courses from database")

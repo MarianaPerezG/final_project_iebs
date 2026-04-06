@@ -40,7 +40,12 @@ def create_skill_matrix(
     save_dataframe_to_csv(result.matrix, config.final_output_path)
     logger.info(f"Processed matrix with scoring saved to: {config.final_output_path}")
 
-    columns = ["EmployeeNumber"] + list(global_skills)
+    columns = ["EmployeeNumber"]
+    if "JobLevel" in result.matrix.columns:
+        columns.append("JobLevel")
+    columns += list(global_skills)
+
+    columns = [c for c in columns if c in result.matrix.columns]
     skill_matrix = result.matrix[columns]
 
     save_dataframe_to_csv(skill_matrix, config.final_output_path)
