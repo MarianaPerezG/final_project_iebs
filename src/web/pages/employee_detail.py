@@ -15,104 +15,69 @@ logging.basicConfig(level=logging.INFO)
 from web.utils.loaders import load
 from config.levels import get_job_level_name
 
-try:
-    from recommender.get_recommendations import recommend_for_user
-    from config.datasets import COURSE_RECOMMENDATIONS_CONFIGURATION
+st.markdown(
+    """
+    <style>
+        [data-testid="stSidebarNav"] {display: none;}
+        [data-testid="stSidebar"] {display: none;}
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
-    RECOMMENDATIONS_AVAILABLE = True
-except ImportError as e:
-    RECOMMENDATIONS_AVAILABLE = False
-    COURSE_RECOMMENDATIONS_CONFIGURATION = {}
-    logging.warning(f"Recommendation module not available: {e}")
 
+def display_course_recommendations(emp_id: int):
+    """Muestra todos los cursos recomendados para un empleado desde el CSV."""
 
-def display_course_recommendations(
-    emp_id: int, skill_cols: list, course_df: pd.DataFrame
-):
-    """Display top-3 course recommendations for an employee."""
-    if not RECOMMENDATIONS_AVAILABLE:
-        st.error(
-            "❌ Sistema de recomendaciones no disponible. "
-            "No se pudo importar el módulo de recomendaciones."
-        )
-        return
+    csv_path = Path("data/final/course_recommendations.csv")
 
-    if not COURSE_RECOMMENDATIONS_CONFIGURATION:
-        st.error("❌ Configuración de rutas de modelo no disponible")
-        return
-
-    model_path_str = COURSE_RECOMMENDATIONS_CONFIGURATION.get(
-        "MODEL_PATH", "models/trained/course_recommendations_model.pkl"
-    )
-    model_path = Path(model_path_str)
-    csv_path = Path(
-        COURSE_RECOMMENDATIONS_CONFIGURATION.get(
-            "BATCH_RECOMMENDATIONS_PATH", "data/final/course_recommendations.csv"
-        )
-    )
-
-    if not model_path.exists():
+    if not csv_path.exists():
         st.warning(
-            f"⚠️ Modelo no encontrado en: `{model_path}`\n\n"
-            f"Para generar el modelo, ejecuta: `python src/main.py`"
+            "⚠️ Archivo de recomendaciones no encontrado. Ejecuta `python src/main.py` primero."
         )
         return
 
     try:
-        recs = recommend_for_user(
-            user_id=emp_id,
-            model_path=str(model_path.absolute()),
-            csv_path=str(csv_path.absolute()) if csv_path.exists() else None,
-            topk=3,
-        )
+        recs_df = pd.read_csv(csv_path)
+        emp_recs = recs_df[recs_df["employee_number"] == int(emp_id)]
 
-        if not recs:
+        if emp_recs.empty:
             st.info("ℹ️ No se encontraron recomendaciones para este empleado")
             return
 
-        st.markdown("### 📚 Cursos Recomendados")
+        st.markdown("### Cursos Recomendados")
 
-        for rank, rec in enumerate(recs, 1):
+        # Ordenar por rank
+        emp_recs = emp_recs.sort_values("rank")
+
+        for _, rec in emp_recs.iterrows():
             with st.container():
-                col1, col2 = st.columns([3, 1])
+                col1, col2, col3 = st.columns([3, 1.5, 1.5])
 
                 with col1:
-                    st.markdown(f"**{rank}. {rec['course_title']}**")
+                    st.markdown(f"**{int(rec['rank'])}. {rec['course_title']}**")
                     st.caption(
-                        f"Level: {rec['course_level']} | Score: {rec['final_score']:.3f}"
+                        f"📊 Level: {rec['course_level']} | Subject: {rec['course_subject']}"
                     )
 
-                    course_matches = course_df[
-                        course_df["course_title"].str.lower()
-                        == rec["course_title"].lower()
-                    ]
-
-                    if not course_matches.empty:
-                        improved_skills = get_course_skills(
-                            course_matches.iloc[0], skill_cols, threshold=0.05
-                        )
-                        if improved_skills:
-                            st.markdown("**Skills que mejora:**")
-                            for skill in improved_skills[:5]:
-                                score = float(course_matches.iloc[0].get(skill, 0.0))
-                                st.write(f"- {skill} ({score:.2f})")
-
                 with col2:
-                    st.metric("Similitud", f"{rec['cosine_similarity']:.3f}")
+                    st.metric("Score Final", f"{rec['final_score']:.4f}")
+
+                with col3:
+                    st.metric("Similitud", f"{rec['cosine_similarity']:.4f}")
 
                 st.divider()
 
     except Exception as e:
         st.error(f"❌ Error al cargar recomendaciones: {str(e)}")
-        logging.error(f"Recommendation error: {e}", exc_info=True)
+        logging.error(f"Error loading recommendations: {e}", exc_info=True)
 
 
 def main():
     st.set_page_config(page_title="Employee Detail", layout="wide")
 
-    st.title("📊 Detalle del Empleado")
+    st.title("Detalle del Empleado")
 
-    # Get employee ID from URL or session
     if "selected_emp" not in st.session_state:
         st.warning("Por favor, selecciona un empleado desde la página principal")
         return
@@ -130,8 +95,8 @@ def main():
         st.error(f"Error cargando datos: {str(e)}")
         return
 
-    display_name_col = detect_display_name(df)
-    id_col = detect_id_column(df)
+    display_name_col = "JobRole"
+    id_col = "EmployeeNumber"
 
     # Back button
     if st.button("← Volver a la lista"):
@@ -153,9 +118,6 @@ def main():
     with col1:
         st.metric("Employee ID", int(selected_id))
     with col2:
-        if "JobRole" in emp_row.columns:
-            st.metric("Job Role", emp_row.iloc[0]["JobRole"])
-    with col3:
         if "JobLevel" in emp_row.columns:
             job_level = int(emp_row.iloc[0]["JobLevel"])
             job_level_name = get_job_level_name(job_level)
@@ -168,7 +130,7 @@ def main():
 
         if not gap_row.empty:
             st.markdown("---")
-            st.markdown("### 📈 Comparativa Skill vs Gap")
+            st.markdown("### Comparativa Skill vs Gap")
 
             skill_cols = [
                 c
@@ -207,9 +169,7 @@ def main():
                 # Course recommendations
                 if course_df is not None:
                     st.markdown("---")
-                    display_course_recommendations(
-                        int(selected_id), skill_cols, course_df
-                    )
+                    display_course_recommendations(int(selected_id))
 
 
 if __name__ == "__main__":
