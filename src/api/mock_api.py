@@ -1,19 +1,17 @@
 import sqlite3
 import json
 import logging
-from pathlib import Path
-from typing import List
-from schemas import JobPosting, JobPostingsResponse
+from schemas import Course, CoursesResponse
 
 
-class MockJobAPI:
+class MockCourseAPI:
     def __init__(self, db_path: str = "src/config/database.db"):
         self.db_path = db_path
 
-    def get_job_postings(self) -> JobPostingsResponse:
+    def get_courses(self) -> CoursesResponse:
         return self._get_data_from_database()
 
-    def _get_data_from_database(self) -> JobPostingsResponse:
+    def _get_data_from_database(self) -> CoursesResponse:
         try:
             with sqlite3.connect(self.db_path) as conn:
                 conn.row_factory = sqlite3.Row
@@ -26,9 +24,9 @@ class MockJobAPI:
 
                 if not rows:
                     logging.warning("No data found in course_recommendation table")
-                    return JobPostingsResponse(job_postings=[])
+                    return CoursesResponse(courses=[])
 
-                job_postings = []
+                courses = []
                 for row in rows:
                     title = row["title"]
                     skills_raw = row["associatedskills"]
@@ -42,12 +40,12 @@ class MockJobAPI:
                             s.strip() for s in str(skills_raw).split(",")
                         ]
 
-                    job_postings.append(
-                        JobPosting(title=title, associated_skills=associated_skills)
+                    courses.append(
+                        Course(title=title, associated_skills=associated_skills)
                     )
 
-                logging.info(f"Loaded {len(job_postings)} job postings from database")
-                return JobPostingsResponse(job_postings=job_postings)
+                logging.info(f"Loaded {len(courses)} courses from database")
+                return CoursesResponse(courses=courses)
 
         except sqlite3.OperationalError as e:
             logging.error(f"Database error: {e}")

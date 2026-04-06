@@ -1,19 +1,19 @@
-from api.mock_api import MockJobAPI
+from api.mock_api import MockCourseAPI
 
 
-class JobAPISingleton:
+class CourseSingleton:
     _instance = None
 
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super().__new__(cls)
-            cls._instance.api = MockJobAPI()
+            cls._instance.api = MockCourseAPI()
         return cls._instance
 
-    def get_api(self) -> MockJobAPI:
+    def get_api(self) -> MockCourseAPI:
         return self.api
 
 
-def get_job_api() -> MockJobAPI:
-    singleton = JobAPISingleton()
+def get_courses_api() -> MockCourseAPI:
+    singleton = CourseSingleton()
     return singleton.get_api()

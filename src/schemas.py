@@ -42,11 +42,19 @@ class DatabaseConfig:
 
 
 @dataclass
-class JobPosting:
+class Course:
     title: str
     associated_skills: List[str]
 
 
 @dataclass
-class JobPostingsResponse:
-    job_postings: List[JobPosting]
+class CoursesResponse:
+    courses: List[Course]
+
+
+@dataclass
+class CourseSkillsMatrixConfig:
+    courses_response: CoursesResponse
+    output_path: str
+    report_path: str
+    mapping_threshold: float = 0.65

@@ -16,4 +16,4 @@ dependencies:
       - python-dotenv
       - black
       - pre-commit
-      - sqlite
+      - rapidfuzz

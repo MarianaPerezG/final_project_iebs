@@ -25,3 +25,8 @@ TARGET_COMPANY_GOALS_MATRIX_CONFIGURATION = {
 TARGET_MATRIX_CONFIGURATION = {
     "FINAL_TARGET_MATRIX_OUTPUT_PATH": "data/final/target_matrix_result.csv",
 }
+
+RECOMMENDATION_MATRIX_CONFIGURATION = {
+    "FINAL_RECOMMENDATION_MATRIX_OUTPUT_PATH": "data/final/course_skills_matrix.csv",
+    "UNMAPPED_SKILLS_REPORT_PATH": "data/reports/unmapped_skills.json",
+}

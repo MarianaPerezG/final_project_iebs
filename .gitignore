@@ -21,6 +21,7 @@ kaggle.json
 # Data
 data/raw/*.csv
 data/final/*.csv
+data/reports/*.json
 
 #Database
 *.db
