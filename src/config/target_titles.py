@@ -1,0 +1,63 @@
+ROLE_TITLES = {
+    "Human Resources": (
+        "human resources generalist",
+        "human resources business partner",
+        "human resources manager",
+        "hr specialist",
+        "hris analyst",
+        "talent acquisition specialist",
+        "payroll and benefits specialist",
+    ),
+    "Healthcare Representative": (
+        "healthcare representative",
+        "medical sales representative",
+        "healthcare account executive",
+        "life sciences account executive",
+    ),
+    "Sales Executive": (
+        "sales executive",
+        "account executive",
+        "enterprise account executive",
+        "commercial account executive",
+    ),
+    "Sales Representative": (
+        "sales representative",
+        "inside sales representative",
+        "business development representative",
+        "sales development representative",
+    ),
+    "Laboratory Technician": (
+        "laboratory technician",
+        "lab technician",
+        "medical laboratory technician",
+        "clinical laboratory scientist",
+        "medical laboratory scientist",
+        "quality control technician",
+    ),
+    "Research Director": (
+        "research director",
+        "director of research",
+        "research program director",
+    ),
+    "Research Scientist": (
+        "research scientist",
+        "applied scientist",
+        "ai researcher",
+        "research associate scientist",
+        "associate scientist",
+    ),
+    "Manager": (
+        "operations manager",
+        "program manager",
+        "project manager",
+        "project coordinator",
+        "office manager",
+    ),
+    "Manufacturing Director": (
+        "manufacturing director",
+        "manufacturing manager",
+        "plant manager",
+        "production manager",
+        "production supervisor",
+    ),
+}

@@ -47,15 +47,15 @@ El nivel de estudios pesa más en competencias técnicas y la calificación del 
 
 <br>
 
-  - Según el atributo `Education` ($w_E(s)$), si la competencia es una **soft skill** ($s \in \mathcal{S}$), se le asigna un **peso secundario** ($a$), y si es una **hard skill** ($\mathcal{H}$), se le asigna un **peso principal** ($b$).
-  - Según el atributo `PerformanceRating` ($w_P(s)$), si la competencia es una **soft skill** ($s \in \mathcal{S}$), se le asigna un **peso principal** ($b$), y si es una **hard skill** ($\mathcal{H}$), se le asigna un **peso secundario** ($a$).
+  - Según el atributo `Education` ($w_{E}(s)$), si la competencia es una **soft skill** ($s \in \mathcal{S}$), se le asigna un **peso secundario** ($a$), y si es una **hard skill** ($\mathcal{H}$), se le asigna un **peso principal** ($b$).
+  - Según el atributo `PerformanceRating` ($w_{P}(s)$), si la competencia es una **soft skill** ($s \in \mathcal{S}$), se le asigna un **peso principal** ($b$), y si es una **hard skill** ($\mathcal{H}$), se le asigna un **peso secundario** ($a$).
 
 <br>
 
 $$
-w_E(s) = \begin{cases} a, & s \in \mathcal{S} \\ b, & s \in \mathcal{H} \end{cases}
+w_E(s) = \begin{cases} a, & s \in \mathcal{S} \\\\ b, & s \in \mathcal{H} \end{cases}
 \qquad
-w_P(s) = \begin{cases} b, & s \in \mathcal{S} \\ a, & s \in \mathcal{H} \end{cases}
+w_P(s) = \begin{cases} b, & s \in \mathcal{S} \\\\ a, & s \in \mathcal{H} \end{cases}
 $$
 
 <br>
