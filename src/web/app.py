@@ -2,8 +2,31 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from pathlib import Path
+import logging
+import sys
+import os
 
 st.set_page_config(page_title="Skill Matrix Viewer", layout="wide")
+
+# Setup logging
+logging.basicConfig(level=logging.INFO)
+
+# Add src directory to path for imports to work regardless of where script is executed
+src_path = Path(__file__).parent.parent.absolute()
+if str(src_path) not in sys.path:
+    sys.path.insert(0, str(src_path))
+
+# Try to import recommendation functions and configuration (optional, graceful fallback)
+try:
+    from recommender.recommend_courses import recommend_for_user
+    from config.datasets import COURSE_RECOMMENDATIONS_CONFIGURATION
+
+    RECOMMENDATIONS_AVAILABLE = True
+    logging.info("Recommendation module imported successfully")
+except ImportError as e:
+    RECOMMENDATIONS_AVAILABLE = False
+    COURSE_RECOMMENDATIONS_CONFIGURATION = {}
+    logging.warning(f"Recommendation module not available: {e}")
 
 
 @st.cache_data
@@ -33,6 +56,24 @@ def load_gap_matrix():
             return pd.read_csv(path)
         except Exception:
             return None
+    return None
+
+
+@st.cache_data
+def load_course_matrix():
+    """Load course skills matrix for showing which skills each course improves."""
+    candidates = [
+        "data/final/course_skills_matrix.csv",
+        "data/final/course_recommendations_matrix.csv",
+    ]
+    for p in candidates:
+        path = Path(p)
+        if path.exists():
+            try:
+                df = pd.read_csv(path)
+                return df
+            except Exception:
+                continue
     return None
 
 
@@ -66,6 +107,140 @@ def detect_id_column(df: pd.DataFrame) -> str:
     return df.columns[0]
 
 
+def get_course_skills(
+    course_row: pd.Series, skill_cols: list, threshold: float = 0.1
+) -> list:
+    """
+    Extract skills that are improved by a course (skills with score > threshold).
+
+    Parameters:
+    -----------
+    course_row : pd.Series
+        Row from course_skills_matrix
+    skill_cols : list
+        List of skill column names
+    threshold : float
+        Minimum score to consider a skill as improved (default 0.1)
+
+    Returns:
+    --------
+    list
+        List of skill names with non-zero scores, sorted by score descending
+    """
+    skills_with_scores = []
+    for skill in skill_cols:
+        if skill in course_row.index:
+            score = float(course_row.get(skill, 0.0))
+            if score > threshold:
+                skills_with_scores.append((skill, score))
+
+    # Sort by score descending
+    skills_with_scores.sort(key=lambda x: x[1], reverse=True)
+    return [s[0] for s in skills_with_scores]
+
+
+def display_course_recommendations(
+    emp_id: int, skill_cols: list, course_df: pd.DataFrame
+):
+    """
+    Display top-3 course recommendations for an employee.
+
+    Parameters:
+    -----------
+    emp_id : int
+        Employee ID
+    skill_cols : list
+        List of global skill column names
+    course_df : pd.DataFrame
+        Course skills matrix
+    """
+    if not RECOMMENDATIONS_AVAILABLE:
+        st.error(
+            "❌ Sistema de recomendaciones no disponible. "
+            "No se pudo importar el módulo de recomendaciones. "
+            "Verifica que el proyecto esté correctamente instalado."
+        )
+        return
+
+    if not COURSE_RECOMMENDATIONS_CONFIGURATION:
+        st.error("❌ Configuración de rutas de modelo no disponible")
+        return
+
+    # Get model path from config
+    model_path_str = COURSE_RECOMMENDATIONS_CONFIGURATION.get(
+        "MODEL_PATH", "models/trained/course_recommendations_model.pkl"
+    )
+    model_path = Path(model_path_str)
+    csv_path = Path(
+        COURSE_RECOMMENDATIONS_CONFIGURATION.get(
+            "BATCH_RECOMMENDATIONS_PATH", "data/final/course_recommendations.csv"
+        )
+    )
+
+    # Check if model exists
+    if not model_path.exists():
+        st.warning(
+            f"⚠️ Modelo no encontrado en: `{model_path}`\n\n"
+            f"Para generar el modelo, ejecuta en la terminal:\n\n"
+            f"```bash\n"
+            f"cd /Users/mariana/Documents/Master\\ Data\\ Science/Proyecto\\ final/project\n"
+            f"conda run -n proyecto_final_iebs python src/main.py\n"
+            f"```"
+        )
+        return
+
+    try:
+        # Get recommendations (hybrid: cached or on-demand)
+        recs = recommend_for_user(
+            user_id=emp_id,
+            model_path=str(model_path.absolute()),
+            csv_path=str(csv_path.absolute()) if csv_path.exists() else None,
+            topk=3,
+        )
+
+        if not recs:
+            st.info("ℹ️ No se encontraron recomendaciones para este empleado")
+            return
+
+        st.markdown("### 📚 Cursos Recomendados")
+
+        # Display each recommendation as a card-like structure
+        for rank, rec in enumerate(recs, 1):
+            with st.container():
+                col1, col2 = st.columns([3, 1])
+
+                with col1:
+                    st.markdown(f"**{rank}. {rec['course_title']}**")
+                    st.caption(
+                        f"Level: {rec['course_level']} | Score: {rec['final_score']:.3f}"
+                    )
+
+                    # Find course in matrix to get improved skills
+                    course_matches = course_df[
+                        course_df["course_title"].str.lower()
+                        == rec["course_title"].lower()
+                    ]
+
+                    if not course_matches.empty:
+                        improved_skills = get_course_skills(
+                            course_matches.iloc[0], skill_cols, threshold=0.05
+                        )
+                        if improved_skills:
+                            st.markdown("**Skills que mejora:**")
+                            for skill in improved_skills[:5]:  # Show top 5 skills
+                                score = float(course_matches.iloc[0].get(skill, 0.0))
+                                st.write(f"- {skill} ({score:.2f})")
+
+                with col2:
+                    st.metric("Similitud", f"{rec['cosine_similarity']:.3f}")
+
+                st.divider()
+
+    except Exception as e:
+        st.error(f"❌ Error al cargar recomendaciones: {str(e)}")
+        logging.error(f"Recommendation error for emp {emp_id}: {e}", exc_info=True)
+
+
 def main():
     st.title("Employees Data")
 
@@ -96,6 +271,8 @@ def main():
     )
 
     gap_df = load_gap_matrix()
+    course_df = load_course_matrix()
+
     # if an employee id selected, show its row and associated gap
     if selected_id:
         try:
@@ -123,7 +300,7 @@ def main():
                     skill_cols = [
                         c
                         for c in df.columns
-                        if c not in [display_name_col, id_col]
+                        if c not in [display_name_col, id_col, "JobLevel"]
                         and pd.api.types.is_numeric_dtype(df[c])
                     ]
                     # keep only those that also exist in gap_row
@@ -161,6 +338,12 @@ def main():
                         st.markdown("**Top 3 skills con mayor gap:**")
                         for s, v in top3.items():
                             st.write(f"- {s}: {v:.2f}")
+
+                        # Show course recommendations
+                        if course_df is not None:
+                            display_course_recommendations(
+                                int(selected_id), skill_cols, course_df
+                            )
                 else:
                     st.info("No se encontró fila de gap para este EmployeeId")
             else:

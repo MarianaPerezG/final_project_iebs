@@ -3,8 +3,6 @@ from pathlib import Path
 import sqlite3
 import pandas as pd
 
-from config.datasets import SKILL_MATRIX_CONFIGURATION
-from config.global_skills import GLOBAL_SKILLS
 from schemas import DatabaseConfig
 
 
@@ -29,17 +27,6 @@ def create_database(config: DatabaseConfig):
                 )
 
             df = pd.read_csv(csv_path)
-
-            # Validate required columns only for skills_matrix table
-            if table_name == "skills_matrix":
-                required_columns = ["EmployeeNumber"] + list(GLOBAL_SKILLS)
-                missing_columns = [
-                    col for col in required_columns if col not in df.columns
-                ]
-                if missing_columns:
-                    raise ValueError(
-                        f"Missing required columns in {table_name}: {missing_columns}"
-                    )
 
             cursor.execute(
                 """

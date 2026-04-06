@@ -4,20 +4,23 @@ from config.datasets import (
     DATASETS_CONFIGURATION,
     RECOMMENDATION_MATRIX_CONFIGURATION,
     SKILL_MATRIX_CONFIGURATION,
+    COURSE_RECOMMENDATIONS_CONFIGURATION,
 )
 from config.global_skills import GLOBAL_SKILLS
 from schemas import (
     CourseSkillsMatrixConfig,
+    RecommendationConfig,
     DatabaseConfig,
     DownloadConfig,
     SkillMatrixConfig,
     TableConfig,
 )
 from api.singleton import get_courses_api
-from scripts.create_skill_matrix import create_skill_matrix
+from skill_matrix.create_skill_matrix import create_skill_matrix
 from scripts.download_data import download_kaggle_datasets
 from scripts.create_database import create_database
-from scripts.create_recomendations_matrix import create_recommendations_matrix
+from recommender.create_recommendations_matrix import create_recommendations_matrix
+from recommender.recommend_courses import recommend_courses
 
 
 def run_pipeline():
@@ -98,6 +101,21 @@ def run_pipeline():
             mapping_threshold=0.75,
         )
         create_recommendations_matrix(config)
+
+        logging.info("Generating course recommendations...")
+        recommendation_config = RecommendationConfig(
+            gap_matrix_path=COURSE_RECOMMENDATIONS_CONFIGURATION["GAP_MATRIX_PATH"],
+            course_matrix_path=COURSE_RECOMMENDATIONS_CONFIGURATION[
+                "COURSE_MATRIX_PATH"
+            ],
+            output_path=COURSE_RECOMMENDATIONS_CONFIGURATION["MODEL_PATH"],
+            global_skills=list(GLOBAL_SKILLS),
+        )
+        # Add batch recommendations path as attribute
+        recommendation_config.batch_recs_path = COURSE_RECOMMENDATIONS_CONFIGURATION[
+            "BATCH_RECOMMENDATIONS_PATH"
+        ]
+        recommend_courses(recommendation_config)
 
         logging.info("Pipeline executed successfully.")
     except Exception as e:

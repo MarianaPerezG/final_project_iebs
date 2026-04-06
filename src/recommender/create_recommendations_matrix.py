@@ -1,6 +1,5 @@
 import logging
 from pathlib import Path
-from venv import logger
 import pandas as pd
 import json
 
@@ -15,7 +14,7 @@ def _save_unmapped_skills_report(skill_mapper: SkillMapper, report_path: str):
     report = skill_mapper.get_mapping_report()
 
     if not report["unmapped_skills"]:
-        logger.info("No unmapped skills found")
+        logging.info("No unmapped skills found")
         return
 
     path = Path(report_path)
