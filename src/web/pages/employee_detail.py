@@ -1,4 +1,4 @@
-"""Employee detail page."""
+from json import load
 
 import streamlit as st
 import pandas as pd
@@ -6,17 +6,13 @@ from pathlib import Path
 import logging
 import sys
 
-# Setup path
 src_path = Path(__file__).parent.parent.parent.absolute()
 if str(src_path) not in sys.path:
     sys.path.insert(0, str(src_path))
 
-# Setup logging
 logging.basicConfig(level=logging.INFO)
 
-# Import from utils and recommender
-from web.utils.loaders import load_skill_matrix, load_gap_matrix, load_course_matrix
-from web.utils.helpers import detect_display_name, detect_id_column, get_course_skills
+from web.utils.loaders import load
 from config.levels import get_job_level_name
 
 try:
@@ -113,6 +109,7 @@ def display_course_recommendations(
 
 def main():
     st.set_page_config(page_title="Employee Detail", layout="wide")
+
     st.title("📊 Detalle del Empleado")
 
     # Get employee ID from URL or session
@@ -126,9 +123,9 @@ def main():
         return
 
     try:
-        df = load_skill_matrix()
-        gap_df = load_gap_matrix()
-        course_df = load_course_matrix()
+        df = load("data/final/skill_matrix_result.csv")
+        gap_df = load("data/final/gap_matrix_result.csv")
+        course_df = load("data/final/course_skills_matrix.csv")
     except Exception as e:
         st.error(f"Error cargando datos: {str(e)}")
         return
