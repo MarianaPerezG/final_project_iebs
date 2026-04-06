@@ -40,13 +40,23 @@ VERY IMPORTANTE:Make sure .env is NOT being commited to the repo
 
 # Datasets being used 
 
-IBM HR Attrition (Snapshot)
+- IBM HR Attrition (Snapshot)
 
 Source:
 https://www.kaggle.com/datasets/pavansubhasht/ibm-hr-analytics-attrition-dataset
 
-Version:
-v1.0 (snapshot taken on 2026-03-23)
+
+- LinkedIn Job Postings (2023 - 2024) (Snapshot)
+
+Source:
+https://www.kaggle.com/datasets/marianaprezgonzlez/linkedin-job-postings-2023-2024
+
+
+- Multi-Platform Online Courses Dataset (Snapshot)
+
+Source:
+https://www.kaggle.com/datasets/marianaprezgonzlez/multi-platform-online-courses-dataset/data?select=Udemy.csv
+
 
 # Next Steps
 
