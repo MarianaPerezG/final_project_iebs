@@ -12,6 +12,7 @@ dependencies:
   - python-dateutil
   - scikit-learn=1.4.2
   - streamlit
+  - sentence-transformers
   - pip:
       - kaggle
       - python-dotenv

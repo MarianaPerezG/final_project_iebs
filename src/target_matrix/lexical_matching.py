@@ -6,7 +6,7 @@ from config.target_titles import ROLE_TITLES
 from target_matrix.common import (MatchResult, normalize_title,
                                   validate_role_titles)
 
-ROLE_MIN_SIMILARITY = 90
+ROLE_MIN_SIMILARITY = 93
 
 validate_role_titles(ROLE_TITLES)
 
@@ -27,9 +27,9 @@ ROLE_LOOKUP = _build_role_lookup(ROLE_TITLES)
 def _find_exact_roles(title: str) -> set[str]:
     matched_roles: set[str] = set()
 
-    for key, role in ROLE_LOOKUP.items():
-        if re.search(rf"\b{re.escape(key)}\b", title):
-            matched_roles.add(role)
+    for key_alias, canonical_role in ROLE_LOOKUP.items():
+        if re.search(rf"\b{re.escape(key_alias)}\b", title):
+            matched_roles.add(canonical_role)
 
     return matched_roles
 
@@ -38,15 +38,15 @@ def _find_fuzzy_role(title: str) -> tuple[str | None, float | None]:
     result = process.extractOne(
         title,
         ROLE_LOOKUP.keys(),
-        scorer=fuzz.token_set_ratio,
+        scorer=fuzz.token_sort_ratio,
         score_cutoff=ROLE_MIN_SIMILARITY,
     )
 
     if result is None:
         return None, None
 
-    key, similarity, _ = result
-    return ROLE_LOOKUP[key], float(similarity)
+    key_alias, similarity, _ = result
+    return ROLE_LOOKUP[key_alias], float(similarity)
 
 
 def resolve_role_lexical(title: str) -> MatchResult:
@@ -57,6 +57,9 @@ def resolve_role_lexical(title: str) -> MatchResult:
 
     if len(roles) > 1:
         return None, "ambiguous", None
+
+    if len(title.split()) == 1:
+        return None, None, None
 
     role, similarity = _find_fuzzy_role(title)
 

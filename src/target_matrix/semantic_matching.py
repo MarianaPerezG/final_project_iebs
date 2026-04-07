@@ -8,8 +8,8 @@ from target_matrix.common import (MatchResult, normalize_title,
                                   validate_role_titles)
 
 MODEL_NAME = "all-MiniLM-L6-v2"  # "all-mpnet-base-v2"
-ROLE_MIN_SIMILARITY = 0.55
-ROLE_MIN_MARGIN = 0.03
+ROLE_MIN_SIMILARITY = 0.78
+ROLE_MIN_MARGIN = 0.05
 
 validate_role_titles(ROLE_TITLES)
 
@@ -56,7 +56,11 @@ def _score_roles(title: str) -> dict[str, float]:
         normalize_embeddings=True,
     )
 
-    similarities = util.cos_sim(title_embedding, role_embeddings)[0].tolist()
+    # El producto escalar de dos vectores unitarios es igual al coseno del ángulo comprendido entre ellos
+    # Si se normalizan los vectores, es más rápido utilizar el producto escalar (util.dot_score)
+    # que la similitud coseno (util.cos_sim)
+    # Ref: https://sbert.net/docs/package_reference/sentence_transformer/SentenceTransformer.html
+    similarities = util.dot_score(title_embedding, role_embeddings)[0].tolist()
     scores: dict[str, float] = {}
 
     for (canonical, _), similarity in zip(catalog, similarities, strict=False):
