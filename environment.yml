@@ -2,17 +2,15 @@ name: proyecto_final_iebs
 
 channels:
   - conda-forge
-  - defaults
 
 dependencies:
   - python=3.11
-  - pip
   - numpy
   - pandas
-  - python-dateutil
-  - scikit-learn=1.4.2
-  - streamlit
+  - scikit-learn
   - sentence-transformers
+  - streamlit
+  - pip
   - pip:
       - kaggle
       - python-dotenv

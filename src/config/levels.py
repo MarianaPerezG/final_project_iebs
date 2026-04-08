@@ -20,6 +20,4 @@ def get_job_level_name(level: int) -> str:
 
 
 def get_course_level_number(level_str: str) -> int:
-    return COURSE_LEVEL_MAPPING.get(
-        str(level_str).lower(), 3
-    )  # Default to intermediate
+    return COURSE_LEVEL_MAPPING.get(str(level_str).lower(), 3)
