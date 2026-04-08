@@ -9,7 +9,10 @@ import logging
 from schemas import RecommendationConfig
 from scripts.save_data import save_dataframe_to_csv
 from config.levels import get_course_level_number
-from .semantic_scoring import compute_semantic_similarity
+from recommender.semantic_scoring_model import (
+    create_course_semantic_embeddings,
+    create_employee_description_embeddings,
+)
 
 
 class CourseRecommendationModel:
@@ -75,50 +78,7 @@ class CourseRecommender:
         self.course_matrix = model.course_matrix
         self.global_skills = model.global_skills
 
-        # Pre-compute course embeddings once (not for each employee!)
-        self._course_embeddings_cache = None
-        self._precache_course_embeddings()
-
-    def _precache_course_embeddings(self):
-        """Pre-compute semantic embeddings for all courses (done once)."""
-        logging.info("Pre-computing course embeddings for semantic matching...")
-
-        course_contexts = []
-        for course_idx in range(len(self.course_matrix)):
-            course_row = self.course_matrix.iloc[course_idx]
-
-            # Extract course skills (high scores)
-            course_skills = []
-            for skill in self.global_skills:
-                skill_score = float(course_row.get(skill, 0.0))
-                if skill_score > 0.5:
-                    course_skills.append(skill)
-
-            course_skills_str = (
-                ", ".join(course_skills) if course_skills else "multiple skills"
-            )
-            course_level = str(course_row.get("level", "intermediate"))
-
-            # Build course context
-            course_context = (
-                f"Course: {course_row.get('course_title', 'Unknown')}. "
-                f"Subject: {course_row.get('subject', 'General')}. "
-                f"Level: {course_level}. "
-                f"Teaches: {course_skills_str}. "
-                f"Practical hands-on training."
-            )
-            course_contexts.append(course_context)
-
-        # Batch encode ALL courses at once (much faster!)
-        from .semantic_scoring import _get_model
-
-        model = _get_model()
-        self._course_embeddings_cache = model.encode(
-            course_contexts,
-            convert_to_tensor=False,
-            normalize_embeddings=True,
-        )
-        logging.info(f"Pre-cached embeddings for {len(course_contexts)} courses.")
+        self._course_embeddings = create_course_semantic_embeddings(self.course_matrix)
 
     def _level_compatibility_factor(self, course_level: str, job_level: int) -> float:
         course_lvl_num = get_course_level_number(course_level)
@@ -167,37 +127,9 @@ class CourseRecommender:
     ) -> List[dict]:
         gap_vec, job_level = self._get_user_gap_vector(employee_number)
 
-        user_row = self.gap_matrix[
-            self.gap_matrix["EmployeeNumber"] == employee_number
-        ].iloc[0]
-
-        # Build employee gap description
-        gap_skills = []
-        for skill in self.global_skills:
-            gap_val = float(user_row.get(skill, 0.0))
-            if gap_val > 0:
-                gap_skills.append((skill, gap_val))
-
-        gap_skills.sort(key=lambda x: x[1], reverse=True)
-        top_gap_skills = [s[0] for s in gap_skills[:5]]
-        gap_skills_str = (
-            ", ".join(top_gap_skills) if top_gap_skills else "general skills"
-        )
-
-        gap_description = (
-            f"Employee seeking to improve: {gap_skills_str}. "
-            f"Current level: {job_level}. "
-            f"Needs practical training in these specific areas."
-        )
-
-        # Encode employee context only once (not for each course!)
-        from .semantic_scoring import _get_model
-
-        model = _get_model()
-        employee_embedding = model.encode(
-            gap_description,
-            convert_to_tensor=False,
-            normalize_embeddings=True,
+        # Encode employee ONCE, outside the loop
+        employee_embedding = create_employee_description_embeddings(
+            self.gap_matrix, employee_number
         )
 
         recommendations = []
@@ -218,12 +150,11 @@ class CourseRecommender:
             # Level compatibility
             level_factor = self._level_compatibility_factor(course_level, job_level)
 
-            # Semantic similarity using pre-cached course embeddings (ultra-fast!)
-            course_embedding = self._course_embeddings_cache[course_idx]
+            # Semantic similarity - just dot product, employee already encoded
+            course_embedding = self._course_embeddings[course_idx]
             semantic_sim = float(np.dot(employee_embedding, course_embedding))
-            semantic_sim = max(0.0, min(1.0, semantic_sim))  # Clamp to [0, 1]
+            semantic_sim = max(0.0, min(1.0, semantic_sim))
 
-            # Hybrid score
             final_score = 0.4 * cosine_sim + 0.4 * semantic_sim + 0.2 * level_factor
 
             recommendations.append(
