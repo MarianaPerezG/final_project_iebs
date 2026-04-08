@@ -56,7 +56,7 @@ $$
 
 <br>
 
-En este caso se emplean las familias ocupacionales, siendo $ \text{rank}(f) $ el puesto que ocupan en el ranking de demanda y $ K $ el número total de familias.
+En este caso se emplean las familias ocupacionales, siendo $\text{rank}(f)$ el puesto que ocupan en el ranking de demanda y $K$ el número total de familias.
 
 <br>
 
