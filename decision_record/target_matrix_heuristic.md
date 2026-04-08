@@ -85,7 +85,7 @@ Según los intereses de una empresa, estos pueden incrementar hasta 1 punto, un 
 <br>
 
 $$
-\beta \cdot \text{goal}(s) \in \{0.0, 0.5, 1.0\}
+\beta \cdot \text{goal}(s) \in \lbrace 0.0, 0.5, 1.0 \rbrace
 $$
 
 <br>
