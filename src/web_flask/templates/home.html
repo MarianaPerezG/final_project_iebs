@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Employee Directory{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h2 class="card-title mb-4">Employee Directory</h2>
+                
+                <!-- Search Form -->
+                <form method="GET" class="mb-4">
+                    <div class="input-group">
+                        <input 
+                            type="text" 
+                            name="search" 
+                            class="form-control" 
+                            placeholder="Search by employee ID or job title..."
+                            value="{{ search }}"
+                        >
+                        <button class="btn btn-primary" type="submit">Search</button>
+                        {% if search %}
+                            <a href="/" class="btn btn-outline-secondary">Clear</a>
+                        {% endif %}
+                    </div>
+                </form>
+
+                <!-- Employees Table -->
+                {% if employees %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Job Title</th>
+                                    <th>Level</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for emp in employees %}
+                                    <tr>
+                                        <td><strong>{{ emp.id }}</strong></td>
+                                        <td>{{ emp.role }}</td>
+                                        <td>{{ emp.level }}</td>
+                                        <td>
+                                            <a href="/employee/{{ emp.id }}" class="btn btn-sm btn-primary">
+                                                View details
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info" role="alert">
+                        {% if search %}
+                            No employees were found for "{{ search }}"
+                        {% else %}
+                            No employees are currently available
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

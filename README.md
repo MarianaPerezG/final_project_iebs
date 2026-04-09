@@ -63,13 +63,25 @@ https://www.kaggle.com/datasets/marianaprezgonzlez/multi-platform-online-courses
 - Regression model with KNN for aggregation in roles and scoring rules
 
 
-## Web app 
+## Web App - Talent Growth Hub
 
-Run the app:
+### Run the Flask application:
 
 ```bash
-conda env update --file environment.yml --prune   # si no has creado o quieres actualizar
+# 1. Create/update environment (first time only)
+conda env create -f environment.yml
+
+# 2. Activate environment
 conda activate proyecto_final_iebs
-streamlit run src/web/app.py
+
+# 3. Run the Flask app
+python src/web_flask/app.py
 ```
+
+### Access the app:
+
+- **Home (Company Goals):** http://localhost:5000/
+- **Employee Directory:** http://localhost:5000/employees
+- **Employee Detail:** http://localhost:5000/employee/{employee_id}
+
 

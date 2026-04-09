@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Company Goals{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+    <h1>Company goals</h1>
+    <p>Track the strategic priorities that guide learning recommendations and keep the employee development program aligned with the business roadmap.</p>
+</div>
+
+{% if saved %}
+<div class="alert alert-info mb-4" role="alert">
+    Company goals were saved successfully.
+</div>
+{% endif %}
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Current company goals</h5>
+                {% if company_goals %}
+                <a href="/company-goals/new" class="btn btn-outline-secondary btn-sm">Update goals</a>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                {% if company_goals %}
+                <div class="goal-list">
+                    {% for item in company_goals %}
+                    <div class="goal-item">
+                        <div class="goal-index">{{ item.id }}</div>
+                        <div class="goal-text">{{ item.goal }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <h3>No company goals yet</h3>
+                    <p>Create the first set of company goals to define the strategic context for employee development and course recommendations.</p>
+                    <a href="/company-goals/new" class="btn btn-primary">Create company goals</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card mb-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">Next step</h5>
+            </div>
+            <div class="card-body">
+                <p class="helper-text">After defining the company goals, you can review the employee directory and inspect how skills gaps connect to course recommendations.</p>
+                <a href="/employees" class="btn btn-outline-secondary">Open employee directory</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

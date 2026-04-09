@@ -1,0 +1,611 @@
+/* Custom styles for Flask app */
+
+
+:root {
+    --bg-color: #07111f;
+    --surface-color: #0d1b2d;
+    --surface-elevated: #13243b;
+    --surface-soft: #162b46;
+    --border-color: #223a5b;
+    --text-color: #f4f8ff;
+    --muted-color: #9bb0cc;
+    --primary-color: #7dc4ff;
+    --primary-strong: #3ea3ff;
+    --primary-soft: #d9efff;
+    --success-color: #63d6a3;
+    --danger-color: #ff7f96;
+    --warning-color: #ffc96b;
+}
+
+body {
+    background:
+        radial-gradient(circle at top left, rgba(62, 163, 255, 0.14), transparent 28%),
+        radial-gradient(circle at top right, rgba(125, 196, 255, 0.10), transparent 24%),
+        linear-gradient(180deg, #050c17 0%, var(--bg-color) 55%, #081322 100%);
+    color: var(--text-color);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+.navbar {
+    background-color: rgba(7, 17, 31, 0.88) !important;
+    border-bottom: 1px solid rgba(125, 196, 255, 0.18);
+    backdrop-filter: blur(14px);
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.5rem;
+    letter-spacing: 0.02em;
+    color: var(--text-color) !important;
+}
+
+.navbar-brand .h5 {
+    color: var(--text-color);
+}
+
+.navbar-nav .nav-link {
+    color: var(--muted-color);
+    padding: 0.4rem 0.75rem;
+    border-radius: 999px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.navbar-nav .nav-link:hover {
+    background-color: rgba(125, 196, 255, 0.10);
+    color: var(--text-color);
+    text-decoration: none;
+}
+
+.card {
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    background-color: rgba(13, 27, 45, 0.92);
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.32);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.38);
+    border-color: rgba(125, 196, 255, 0.35);
+}
+
+.card-header {
+    background-color: rgba(19, 36, 59, 0.96) !important;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-color);
+}
+
+.card-title {
+    color: var(--text-color);
+    font-weight: 700;
+}
+
+table {
+    font-size: 0.95rem;
+    color: var(--text-color);
+}
+
+table thead th {
+    background-color: rgba(19, 36, 59, 0.98) !important;
+    border-bottom: 1px solid var(--border-color);
+    font-weight: 600;
+    color: var(--primary-soft);
+}
+
+.table-light,
+.table-light th,
+.table-light td,
+thead.table-light th,
+.table > thead.table-light > tr > th {
+    background-color: rgba(19, 36, 59, 0.98) !important;
+    color: var(--primary-soft) !important;
+    border-color: var(--border-color) !important;
+}
+
+table tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+table tbody tr:hover {
+    background-color: rgba(125, 196, 255, 0.08);
+}
+
+.table {
+    --bs-table-bg: transparent;
+    --bs-table-color: var(--text-color);
+    --bs-table-border-color: var(--border-color);
+    --bs-table-hover-color: var(--text-color);
+    --bs-table-hover-bg: rgba(125, 196, 255, 0.06);
+}
+
+.btn-primary {
+    background-color: var(--primary-strong);
+    border: 1px solid var(--primary-strong);
+    color: #06111f;
+    font-weight: 700;
+}
+
+.btn-primary:hover {
+    background-color: #68bbff;
+    border-color: #68bbff;
+    color: #06111f;
+}
+
+.btn-outline-secondary {
+    border-color: var(--border-color);
+    color: var(--text-color);
+    background-color: rgba(19, 36, 59, 0.92);
+}
+
+.btn-outline-secondary:hover {
+    background-color: rgba(28, 50, 79, 0.96);
+    border-color: rgba(125, 196, 255, 0.34);
+    color: var(--text-color);
+}
+
+.badge {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.badge.bg-primary {
+    background-color: var(--primary-strong) !important;
+    color: #06111f;
+}
+
+.badge.bg-success {
+    background-color: rgba(99, 214, 163, 0.16) !important;
+    color: #baf3d9;
+    border: 1px solid rgba(99, 214, 163, 0.28);
+}
+
+.badge.bg-secondary {
+    background-color: rgba(155, 176, 204, 0.18) !important;
+    color: #d6e2f5;
+    border: 1px solid rgba(155, 176, 204, 0.25);
+}
+
+.badge.bg-warning {
+    background-color: rgba(255, 201, 107, 0.18) !important;
+    color: #ffe1a3 !important;
+    border: 1px solid rgba(255, 201, 107, 0.30);
+}
+
+.form-control {
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    padding: 0.75rem 0.9rem;
+    background-color: rgba(9, 20, 35, 0.9);
+    color: var(--text-color);
+}
+
+.form-control,
+.form-control::placeholder,
+.card,
+.card-body,
+.card-header,
+.h5,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+th,
+td,
+label,
+div {
+    color: inherit;
+}
+
+.form-control::placeholder {
+    color: var(--muted-color);
+}
+
+.form-control:focus {
+    background-color: rgba(9, 20, 35, 0.96);
+    color: var(--text-color);
+    border-color: rgba(125, 196, 255, 0.5);
+    box-shadow: 0 0 0 0.2rem rgba(125, 196, 255, 0.12);
+}
+
+.input-group {
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.24);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.progress {
+    background-color: rgba(255, 255, 255, 0.08);
+    border-radius: 999px;
+    height: 8px;
+}
+
+.progress-bar {
+    background: linear-gradient(90deg, #8acbff 0%, #52b0ff 100%);
+}
+
+.alert {
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+}
+
+.alert-info {
+    background-color: rgba(125, 196, 255, 0.10);
+    color: var(--primary-soft);
+}
+
+.alert-danger {
+    background-color: rgba(255, 127, 150, 0.10);
+    color: #ffd0d9;
+}
+
+.bg-light {
+    background-color: rgba(19, 36, 59, 0.82) !important;
+    color: var(--text-color) !important;
+    border: 1px solid rgba(125, 196, 255, 0.10);
+}
+
+.bg-light .h5,
+.bg-light .mb-0,
+.bg-light .small,
+.bg-light div,
+.bg-light span {
+    color: var(--text-color) !important;
+}
+
+.border-top {
+    border-top: 1px solid rgba(125, 196, 255, 0.12) !important;
+}
+
+.container-fluid {
+    max-width: 1240px;
+    padding: 0 24px;
+}
+
+.page-hero {
+    margin-bottom: 1.5rem;
+}
+
+.page-hero h1 {
+    margin-bottom: 0.5rem;
+    font-size: 2.2rem;
+    font-weight: 700;
+}
+
+.page-hero p {
+    max-width: 760px;
+    color: var(--muted-color);
+}
+
+.goal-list {
+    display: grid;
+    gap: 1rem;
+}
+
+.goal-item {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    padding: 1rem 1.1rem;
+    border: 1px solid rgba(125, 196, 255, 0.12);
+    border-radius: 12px;
+    background-color: rgba(19, 36, 59, 0.78);
+}
+
+.goal-index {
+    min-width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background-color: rgba(125, 196, 255, 0.16);
+    color: var(--primary-soft);
+    font-weight: 700;
+}
+
+.goal-text {
+    color: var(--text-color);
+    line-height: 1.5;
+}
+
+.empty-state {
+    padding: 2rem;
+    text-align: center;
+}
+
+.empty-state h3 {
+    margin-bottom: 0.75rem;
+    color: var(--text-color);
+}
+
+.empty-state p {
+    max-width: 560px;
+    margin: 0 auto 1.25rem;
+    color: var(--muted-color);
+}
+
+.split-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.form-panel textarea.form-control {
+    min-height: 280px;
+    resize: vertical;
+}
+
+.helper-text {
+    color: var(--muted-color);
+    font-size: 0.95rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .card-body {
+        padding: 1rem;
+    }
+    
+    table {
+        font-size: 0.85rem;
+    }
+    
+    .btn {
+        padding: 0.4rem 0.75rem;
+        font-size: 0.85rem;
+    }
+}
+
+/* Footer */
+footer {
+    background-color: transparent;
+    margin-top: auto;
+}
+
+footer p {
+    margin-bottom: 0;
+}
+
+/* Links */
+a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+a:hover {
+    color: #b8e1ff;
+    text-decoration: underline;
+}
+
+/* Custom spacing */
+.mt-5 {
+    margin-top: 3rem !important;
+}
+
+.mb-4 {
+    margin-bottom: 1.5rem !important;
+}
+
+/* Flex utilities */
+.d-flex {
+    display: flex;
+}
+
+.justify-content-between {
+    justify-content: space-between;
+}
+
+.align-items-center {
+    align-items: center;
+}
+
+.fw-bold {
+    font-weight: 600 !important;
+}
+
+.text-muted {
+    color: var(--muted-color) !important;
+}
+
+.small {
+    font-size: 0.85rem;
+}
+
+.gap-focus-card {
+    border-color: rgba(125, 196, 255, 0.18);
+    background: linear-gradient(180deg, rgba(14, 32, 53, 0.95) 0%, rgba(10, 23, 38, 0.95) 100%);
+}
+
+.gap-focus-header h5 {
+    color: var(--text-color);
+    font-weight: 600;
+}
+
+.top-gap-item {
+    height: 100%;
+    padding: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    background-color: rgba(19, 36, 59, 0.86);
+}
+
+.top-gap-rank {
+    display: inline-block;
+    margin-bottom: 0.75rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 999px;
+    background-color: rgba(125, 196, 255, 0.12);
+    color: var(--primary-soft);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.top-gap-skill {
+    margin-bottom: 0.35rem;
+    color: var(--text-color);
+    font-size: 1.05rem;
+    font-weight: 600;
+}
+
+.top-gap-score {
+    margin-bottom: 0.75rem;
+    color: #c9ddf8;
+    font-size: 0.9rem;
+}
+
+.top-gap-meter {
+    width: 100%;
+    height: 8px;
+    overflow: hidden;
+    border-radius: 999px;
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.top-gap-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #9ad4ff 0%, #4eaefe 100%);
+}
+
+/* Reason column styling in recommendations table */
+.reason-header {
+    background-color: rgba(19, 36, 59, 0.98) !important;
+    color: var(--primary-soft);
+    font-weight: 600;
+    width: 25%;
+}
+
+.reason-cell {
+    background-color: transparent;
+    padding: 1rem !important;
+    vertical-align: middle;
+}
+
+.gap-score-badge {
+    background-color: rgba(125, 196, 255, 0.16) !important;
+    color: #eaf6ff !important;
+    border: 1px solid rgba(125, 196, 255, 0.28);
+}
+
+.gap-progress-bar {
+    background: #66bfff !important;
+}
+
+/* Subjects styling */
+.subjects-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.subject-badge {
+    display: inline-block;
+    background-color: rgba(125, 196, 255, 0.10);
+    color: #e8f6ff;
+    padding: 0.4rem 0.8rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    white-space: nowrap;
+    border: 1px solid rgba(125, 196, 255, 0.22);
+    transition: all 0.2s ease;
+}
+
+.subject-badge:hover {
+    background-color: rgba(125, 196, 255, 0.18);
+    border-color: rgba(125, 196, 255, 0.40);
+}
+
+/* Skills column styling */
+.skills-header {
+    background-color: rgba(19, 36, 59, 0.98) !important;
+    color: var(--primary-soft);
+    font-weight: 600;
+    width: 35%;
+}
+
+.skills-cell {
+    background-color: transparent;
+    padding: 1rem !important;
+    vertical-align: middle;
+}
+
+.skills-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+}
+
+.skill-badge {
+    display: inline-block;
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--primary-soft);
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    white-space: nowrap;
+    border: 1px solid rgba(125, 196, 255, 0.18);
+    transition: all 0.2s ease;
+}
+
+.skill-badge:hover {
+    background-color: rgba(125, 196, 255, 0.16);
+    color: #ffffff;
+}
+
+.table-responsive,
+.table-responsive * {
+    color: inherit;
+}
+
+/* Hover effect for recommendations table rows */
+table tbody tr:hover .subject-badge {
+    background-color: rgba(125, 196, 255, 0.18);
+    border-color: rgba(125, 196, 255, 0.40);
+}
+
+table tbody tr:hover .skill-badge {
+    border-color: rgba(125, 196, 255, 0.42);
+}
+
+/* Responsive adjustments for skills column */
+@media (max-width: 768px) {
+    .reason-header,
+    .skills-header {
+        font-size: 0.9rem;
+    }
+
+    .top-gap-item {
+        margin-bottom: 0.75rem;
+    }
+    
+    .reason-cell,
+    .skills-cell {
+        padding: 0.75rem !important;
+    }
+    
+    .reason-tag {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+    }
+    
+    .subjects-container,
+    .skills-container {
+        gap: 0.4rem;
+    }
+    
+    .subject-badge,
+    .skill-badge {
+        padding: 0.3rem 0.6rem;
+        font-size: 0.75rem;
+    }
+}

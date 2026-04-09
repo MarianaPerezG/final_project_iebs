@@ -1,6 +1,10 @@
 from pathlib import Path
-from venv import logger
+import logging
+
 import pandas as pd
+
+
+logger = logging.getLogger(__name__)
 
 
 def save_dataframe_to_csv(df: pd.DataFrame, output_path: str) -> Path:

@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block title %}Employee {{ emp_id }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <!-- Back Button -->
+        <a href="/employees" class="btn btn-outline-secondary btn-sm mb-4">
+            Back to directory
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <!-- Employee Info Card -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h2 class="card-title">{{ emp_role }}</h2>
+                
+                <div class="row mt-3">
+                    <div class="col-md-3">
+                        <div class="p-3 bg-light rounded">
+                            <div class="text-muted small mb-1">Employee ID</div>
+                            <div class="h5 mb-0">{{ emp_id }}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="p-3 bg-light rounded">
+                            <div class="text-muted small mb-1">Job Role</div>
+                            <div class="h5 mb-0">{{ emp_role }}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="p-3 bg-light rounded">
+                            <div class="text-muted small mb-1">Job Level</div>
+                            <div class="h5 mb-0">{{ emp_level }}</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="p-3 bg-light rounded">
+                            <div class="text-muted small mb-1">Recommendation Status</div>
+                            <div class="h5 mb-0">
+                                {% if recommendations %}
+                                    <span class="badge bg-success">Available</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">No data</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if top_gap_skills %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card gap-focus-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3 gap-focus-header">
+                    <div>
+                        <h5 class="mb-1">Priority gaps</h5>
+                        <p class="text-muted mb-0">These are the three strongest gaps currently driving the course recommendations.</p>
+                    </div>
+                </div>
+                <div class="row">
+                    {% for gap in top_gap_skills %}
+                        <div class="col-md-4 mb-3 mb-md-0">
+                            <div class="top-gap-item">
+                                <div class="top-gap-rank">Top {{ loop.index }}</div>
+                                <div class="top-gap-skill">{{ gap.skill }}</div>
+                                <div class="top-gap-score">Gap score {{ "%.2f"|format(gap.gap) }}</div>
+                                <div class="top-gap-meter">
+                                    <div class="top-gap-fill" style="width: {{ (gap.gap / 5) * 100 }}%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if gap_skills %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">Skills gap overview</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for skill in gap_skills %}
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="fw-bold">{{ skill.skill }}</span>
+                                <span class="badge gap-score-badge">{{ "%.2f"|format(skill.gap) }}</span>
+                            </div>
+                            <div class="progress">
+                                <div 
+                                    class="progress-bar gap-progress-bar" 
+                                    style="width: {{ (skill.gap / 5) * 100 }}%"
+                                ></div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if recommendations %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">Recommended Courses</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Course</th>
+                                <th class="reason-header">Subject</th>
+                                <th class="skills-header">Skills Developed</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for rec in recommendations %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ rec.course_name }}</strong>
+                                        <div class="text-muted small">Rank #{{ rec.course_id }}</div>
+                                    </td>
+                                    <td class="reason-cell">
+                                        <div class="subjects-container">
+                                            {% for subject in rec.subjects %}
+                                                <span class="subject-badge">{{ subject }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    </td>
+                                    <td class="skills-cell">
+                                        {% if rec.skills %}
+                                            <div class="skills-container">
+                                                {% for skill in rec.skills %}
+                                                    <span class="skill-badge">{{ skill }}</span>
+                                                {% endfor %}
+                                            </div>
+                                        {% else %}
+                                            <span class="text-muted">No skill data</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="row">
+    <div class="col-12">
+        <div class="alert alert-info" role="alert">
+            No recommendations are available for this employee
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
