@@ -3,8 +3,11 @@ import re
 from rapidfuzz import fuzz, process
 
 from config.target_titles import ROLE_TITLES
-from target_matrix.common import (MatchResult, normalize_title,
-                                  validate_role_titles)
+from target_matrix.common import (
+    MatchResult,
+    normalize_title,
+    validate_role_titles,
+)
 
 ROLE_MIN_SIMILARITY = 93
 

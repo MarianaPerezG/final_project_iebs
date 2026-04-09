@@ -24,6 +24,14 @@ ROLE_TO_FAMILY = {
     "Manufacturing Director": "business_operations",
 }
 
+FAMILY_CORE_SKILL = {
+    "corporate_services": "business_functions",
+    "client_partnerships": "business_functions",
+    "specialized_technical_services": "domain_expertise",
+    "research_development": "analytics",
+    "business_operations": "project_management",
+}
+
 FAMILY_SCORES = {
     "corporate_services": _score(
         collaboration=4,

@@ -4,8 +4,11 @@ import torch
 from sentence_transformers import SentenceTransformer, util
 
 from config.target_titles import ROLE_TITLES
-from target_matrix.common import (MatchResult, normalize_title,
-                                  validate_role_titles)
+from target_matrix.common import (
+    MatchResult,
+    normalize_title,
+    validate_role_titles,
+)
 
 MODEL_NAME = "all-MiniLM-L6-v2"  # "all-mpnet-base-v2"
 ROLE_MIN_SIMILARITY = 0.78

@@ -4,7 +4,7 @@
 
 <br>
 
-La Target Matrix conserva las mismas dimensiones $n \times m$ que la Skill Matrix; ambas relacionan a los empleados con competencias.
+La Target Matrix conserva las mismas dimensiones $n \times m$ que la Skill Matrix, y ambas relacionan a los empleados con competencias.
 
 <br>
 

@@ -1,7 +1,8 @@
 from dataclasses import dataclass, field
-from typing import Dict, List, Any
-import pandas as pd
 from pathlib import Path
+from typing import Any, Dict, List
+
+import pandas as pd
 
 
 # General
@@ -38,11 +39,19 @@ class SkillMatrixConfig:
     final_output_path: str
 
 
-# Target Skill Matrix
+# Target Matrix
 @dataclass
-class TargetSkillMatrixConfig:
+class SkillDemandConfig:
     dataset_path: str
-    output_path: str
+    mapped_output_path: str
+    skill_demand_output_path: str
+
+
+@dataclass
+class TargetMatrixConfig:
+    skill_matrix_path: str
+    skill_demand_path: str
+    final_output_path: str
 
 
 # Course API

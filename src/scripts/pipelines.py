@@ -1,32 +1,41 @@
 import logging
 
+from api.singleton import get_courses_api
 from config.datasets import (
+    COURSE_RECOMMENDATIONS_CONFIGURATION,
     DATASETS_CONFIGURATION,
     RECOMMENDATION_MATRIX_CONFIGURATION,
     SKILL_MATRIX_CONFIGURATION,
-    COURSE_RECOMMENDATIONS_CONFIGURATION,
+    TARGET_DEMAND_SKILL_MATRIX_CONFIGURATION,
+    TARGET_MATRIX_CONFIGURATION,
 )
 from config.global_skills import GLOBAL_SKILLS
-from schemas import (
-    CourseSkillsMatrixConfig,
-    RecommendationConfig,
-    DatabaseConfig,
-    DownloadConfig,
-    SkillMatrixConfig,
-    TableConfig,
-)
-from api.singleton import get_courses_api
-from skill_matrix.create_skill_matrix import create_skill_matrix
-from scripts.download_data import download_kaggle_datasets
-from scripts.create_database import create_database
 from recommender.create_courses_matrix import create_courses_matrix
 from recommender.create_recommendation_model import generate_recommendations
+from schemas import (
+    CourseSkillsMatrixConfig,
+    DatabaseConfig,
+    DownloadConfig,
+    RecommendationConfig,
+    SkillDemandConfig,
+    SkillMatrixConfig,
+    TableConfig,
+    TargetMatrixConfig,
+)
+from scripts.create_database import create_database
+from scripts.download_data import download_kaggle_datasets
+from skill_matrix.create_skill_matrix import create_skill_matrix
+from target_matrix.create_skill_demand_vector import (
+    create_skill_demand_vector_by_family,
+)
+from target_matrix.create_target_matrix import create_target_matrix
 
 
 def run_pipeline():
 
     try:
         logging.info("Starting dataset download")
+
         download_kaggle_datasets(
             [
                 DownloadConfig(
@@ -64,6 +73,30 @@ def run_pipeline():
             ),
         )
 
+        logging.info("Creating skill demand vector")
+
+        create_skill_demand_vector_by_family(
+            config=SkillDemandConfig(
+                dataset_path=TARGET_DEMAND_SKILL_MATRIX_CONFIGURATION["DATASET_PATH"],
+                mapped_output_path=TARGET_DEMAND_SKILL_MATRIX_CONFIGURATION[
+                    "MAPPED_OUTPUT_PATH"
+                ],
+                skill_demand_output_path=TARGET_DEMAND_SKILL_MATRIX_CONFIGURATION[
+                    "SKILL_DEMAND_OUTPUT_PATH"
+                ],
+            )
+        )
+
+        create_target_matrix(
+            config=TargetMatrixConfig(
+                skill_matrix_path=TARGET_MATRIX_CONFIGURATION["SKILL_MATRIX_PATH"],
+                skill_demand_path=TARGET_MATRIX_CONFIGURATION["SKILL_DEMAND_PATH"],
+                final_output_path=TARGET_MATRIX_CONFIGURATION[
+                    "FINAL_TARGET_MATRIX_OUTPUT_PATH"
+                ],
+            )
+        )
+
         create_database(
             config=DatabaseConfig(
                 tables=[
@@ -83,6 +116,7 @@ def run_pipeline():
                 db_path="src/config/database.db",
             )
         )
+
         logging.info("Database created successfully")
 
         logging.info("Fetching courses from API...")
