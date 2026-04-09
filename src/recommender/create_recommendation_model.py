@@ -9,6 +9,10 @@ import logging
 from schemas import RecommendationConfig
 from scripts.save_data import save_dataframe_to_csv
 from config.levels import get_course_level_number
+from recommender.semantic_scoring_model import (
+    create_course_semantic_embeddings,
+    create_employee_description_embeddings,
+)
 
 
 class CourseRecommendationModel:
@@ -74,6 +78,8 @@ class CourseRecommender:
         self.course_matrix = model.course_matrix
         self.global_skills = model.global_skills
 
+        self._course_embeddings = create_course_semantic_embeddings(self.course_matrix)
+
     def _level_compatibility_factor(self, course_level: str, job_level: int) -> float:
         course_lvl_num = get_course_level_number(course_level)
         diff = abs(course_lvl_num - job_level)
@@ -121,6 +127,11 @@ class CourseRecommender:
     ) -> List[dict]:
         gap_vec, job_level = self._get_user_gap_vector(employee_number)
 
+        # Encode employee ONCE, outside the loop
+        employee_embedding = create_employee_description_embeddings(
+            self.gap_matrix, employee_number
+        )
+
         recommendations = []
 
         for course_idx in range(len(self.course_matrix)):
@@ -133,11 +144,18 @@ class CourseRecommender:
 
             course_vec, course_level = self._get_course_vector(course_idx)
 
+            # Numeric similarity (original cosine)
             cosine_sim = np.dot(gap_vec, course_vec)
 
+            # Level compatibility
             level_factor = self._level_compatibility_factor(course_level, job_level)
 
-            final_score = cosine_sim * level_factor
+            # Semantic similarity - just dot product, employee already encoded
+            course_embedding = self._course_embeddings[course_idx]
+            semantic_sim = float(np.dot(employee_embedding, course_embedding))
+            semantic_sim = max(0.0, min(1.0, semantic_sim))
+
+            final_score = 0.4 * cosine_sim + 0.4 * semantic_sim + 0.2 * level_factor
 
             recommendations.append(
                 {
@@ -146,6 +164,7 @@ class CourseRecommender:
                     "course_level": course_level,
                     "course_subject": course_row.get("subject", ""),
                     "cosine_similarity": round(cosine_sim, 4),
+                    "semantic_similarity": round(semantic_sim, 4),
                     "level_factor": round(level_factor, 4),
                     "final_score": round(final_score, 4),
                 }
@@ -169,6 +188,7 @@ class CourseRecommender:
                             "course_level": rec["course_level"],
                             "course_subject": rec["course_subject"],
                             "cosine_similarity": rec["cosine_similarity"],
+                            "semantic_similarity": rec["semantic_similarity"],
                             "level_factor": rec["level_factor"],
                             "final_score": rec["final_score"],
                         }
