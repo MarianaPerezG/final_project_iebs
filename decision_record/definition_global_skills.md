@@ -4,7 +4,7 @@
 
 <br>
 
-El objetivo es identificar los puntos débiles de empresas para sugerir formación específica a sus empleados. En una primera iteración, nos centraremos en un tipo concreto de competencias, presentes en los datasets [*IBM HR Analytics Employee Attrition & Performance*](https://www.kaggle.com/datasets/pavansubhasht/ibm-hr-analytics-attrition-dataset) y [*Global AI Job Market Dataset (2010–2025)*](https://www.kaggle.com/datasets/terencekatua/global-ai-job-market-dataset-20102025). Ambos pertenecientes al mercado corporativo, donde priman las capacidades digitales, de investigación, análisis, gestión y comunicación. Los roles que se evalúan son técnicos, científicos, analíticos y directivos. Todos ellos pueden codificarse en un conjunto de habilidades explícitas, su desempeño es fácilmente observable con KPIs y las carencias se pueden solventar con recapacitación. Esto permite construir una «skill matrix» (competencias que posee la empresa representadas por sus trabajadores) y una «target matrix» (competencias que se prevé que crezcan en relevancia a corto y medio plazo).
+El objetivo es identificar los puntos débiles de empresas para sugerir formación específica a sus empleados. En una primera iteración, nos centraremos en un tipo concreto de competencias, presentes en el dataset [*IBM HR Analytics Employee Attrition & Performance*](https://www.kaggle.com/datasets/pavansubhasht/ibm-hr-analytics-attrition-dataset). Aunque, igualmente, se ha utilizado de apoyo el dataset [*Global AI Job Market Dataset (2010–2025)*](https://www.kaggle.com/datasets/terencekatua/global-ai-job-market-dataset-20102025). Ambos pertenecientes al mercado corporativo, donde priman las capacidades digitales, de investigación, análisis, gestión y comunicación. Los roles que se evalúan son técnicos, científicos, analíticos y directivos. Todos ellos pueden codificarse en un conjunto de habilidades explícitas, su desempeño es fácilmente observable con KPIs y las carencias se pueden solventar con recapacitación. Esto permite construir una «skill matrix» (competencias que posee la empresa representadas por sus trabajadores) y una «target matrix» (competencias que se prevé que se mantengan relevantes a corto y medio plazo).
 
 <br>
 
@@ -35,24 +35,10 @@ Mientras que los puestos de trabajo en *Global AI Job Market Dataset (2010–202
   9. Software Engineer
  10. Systems Engineer
 
-<br>
-
-De las competencias en *Global AI Job Market Dataset (2010–2025)*, podemos extraer la siguiente lista:
-
-  1. Business Analysis
-  2. Cloud Computing
-  3. Communication
-  4. Data Analysis
-  5. Project Management
-  6. Python
-  7. Research
-  8. Software Engineering
-  9. SQL
- 10. Statistics
 
 <br>
 
-Esta información no es especialmente exhaustiva, incluso algunas de las habilidades se solapan con los títulos de las ocupaciones en el mismo dataset. Es necesario agrupar los puestos de trabajo en familias ocupacionales canónicas y hacer una taxonomía base de habilidades, que se mapearán en ambos datasets para alinear la semántica.
+Para alinear la semántica, es necesario agrupar los puestos de trabajo en familias ocupacionales canónicas y elaborar una taxonomía base de habilidades, que se mapearán con el dataset [*LinkedIn Job Postings (2023-2024)*](https://www.kaggle.com/datasets/arshkon/linkedin-job-postings), empleado para calcular la relevancia de las competencias en el mercado.
 
 Las competencias necesarias para desempeñar los trabajos del segmento del mercado laboral observado en los datasets se pueden agrupar en las siguientes categorías:
 

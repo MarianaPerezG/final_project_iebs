@@ -19,7 +19,7 @@ TARGET_DEMAND_SKILL_MATRIX_CONFIGURATION = {
 }
 
 TARGET_COMPANY_GOALS_MATRIX_CONFIGURATION = {
-    "GOALS_OUTPUT_PATH": "data/processed/company_goals_vector.csv",
+    "COMPANY_GOALS_OUTPUT_PATH": "data/processed/company_goals_vector.csv",
 }
 
 TARGET_MATRIX_CONFIGURATION = {
@@ -43,6 +43,6 @@ COURSE_RECOMMENDATIONS_CONFIGURATION = {
 }
 
 COMPANY_GOALS_CONFIGURATION = {
-    "GOALS_RAW_DATASET_REF": "data/raw/company_goals.csv",
-    "GOALS_OUTPUT_PATH": "data/final/company_goals_vector.csv",
+    "COMPANY_GOALS_RAW_DATASET_REF": "data/raw/company_goals.csv",
+    "COMPANY_GOALS_OUTPUT_PATH": "data/final/company_goals_vector.csv",
 }
