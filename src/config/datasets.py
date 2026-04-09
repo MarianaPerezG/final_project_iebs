@@ -41,3 +41,8 @@ COURSE_RECOMMENDATIONS_CONFIGURATION = {
     "MODEL_PATH": "models/trained/course_recommendations_model.pkl",
     "CURRENT_EMPLOYEES_RECOMMENDATIONS_PATH": "data/final/course_recommendations.csv",
 }
+
+COMPANY_GOALS_CONFIGURATION = {
+    "GOALS_RAW_DATASET_REF": "data/raw/company_goals.csv",
+    "GOALS_OUTPUT_PATH": "data/final/company_goals_vector.csv",
+}

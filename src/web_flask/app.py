@@ -1,7 +1,3 @@
-"""
-Flask Web Application for Course Recommendations
-"""
-
 from flask import Flask, render_template, request, jsonify, redirect, url_for
 import pandas as pd
 import logging
@@ -9,11 +5,19 @@ import sys
 import ast
 from pathlib import Path
 
-# Setup path
+
 src_path = Path(__file__).parent.parent.absolute()
 if str(src_path) not in sys.path:
     sys.path.insert(0, str(src_path))
+    print(f"Added to sys.path: {src_path}")
 
+from config.datasets import (
+    COMPANY_GOALS_CONFIGURATION,
+    SKILL_MATRIX_CONFIGURATION,
+    COURSE_RECOMMENDATIONS_CONFIGURATION,
+    RECOMMENDATION_MATRIX_CONFIGURATION,
+)
+from config.global_skills import GLOBAL_SKILLS
 from config.levels import get_job_level_name
 from scripts.create_company_goals import create_company_goals
 
@@ -21,47 +25,18 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__, template_folder="templates", static_folder="static")
-app.config["SECRET_KEY"] = "your-secret-key-here"
-
-# Cache for dataframes
-_data_cache = {}
 
 
-SKILL_COLUMNS = [
-    "collaboration",
-    "leadership",
-    "business_functions",
-    "analytics",
-    "project_management",
-    "software_data",
-    "systems",
-    "domain_expertise",
-]
+SKILL_COLUMNS = GLOBAL_SKILLS
 
 
 def format_skill_name(skill_name):
-    """Convert skill keys into readable labels."""
     return skill_name.replace("_", " ").title()
-
-
-def load_data(filename, stage="final"):
-    """Load data with caching."""
-    cache_key = (stage, filename)
-    if cache_key not in _data_cache:
-        filepath = Path(__file__).parent.parent.parent / "data" / stage / filename
-        try:
-            _data_cache[cache_key] = pd.read_csv(filepath)
-            logger.info(f"Loaded {filename}")
-        except Exception as e:
-            logger.error(f"Error loading {filename}: {e}")
-            return None
-    return _data_cache[cache_key]
 
 
 @app.route("/")
 def home():
-    """Home page with company goals."""
-    goals_df = load_data("company_goals.csv", stage="raw")
+    goals_df = pd.read_csv(COMPANY_GOALS_CONFIGURATION["GOALS_RAW_DATASET_REF"])
     company_goals = []
 
     if goals_df is not None:
@@ -88,8 +63,10 @@ def employee_directory():
     """Employee directory page."""
     search = request.args.get("search", "").lower()
 
-    df = load_data("skill_matrix_result.csv")
-    if df is None:
+    try:
+        df = pd.read_csv(SKILL_MATRIX_CONFIGURATION["FINAL_SKILL_MATRIX_OUTPUT_PATH"])
+    except Exception as e:
+        logger.error(f"Error loading skill matrix: {e}")
         return "Error loading data", 500
 
     # Filter by search
@@ -121,8 +98,13 @@ def employee_directory():
 @app.route("/company-goals/new")
 def new_company_goals():
     """Form to create or replace company goals."""
-    existing_goals = load_data("company_goals.csv", stage="raw")
     goal_lines = ""
+    try:
+        existing_goals = pd.read_csv(
+            COMPANY_GOALS_CONFIGURATION["GOALS_RAW_DATASET_REF"]
+        )
+    except FileNotFoundError:
+        existing_goals = None
 
     if existing_goals is not None and "goal" in existing_goals.columns:
         goal_lines = "\n".join(
@@ -148,7 +130,6 @@ def save_company_goals():
         )
 
     create_company_goals(goals)
-    _data_cache.pop(("raw", "company_goals.csv"), None)
     return redirect(url_for("home", saved=1))
 
 
@@ -156,10 +137,18 @@ def save_company_goals():
 def employee_detail(emp_id):
     """Employee detail page with recommendations."""
     try:
-        df = load_data("skill_matrix_result.csv")
-        gap_df = load_data("gap_matrix_result.csv")
-        course_df = load_data("course_skills_matrix.csv")
-        recommendations_df = load_data("course_recommendations.csv")
+        df = pd.read_csv(SKILL_MATRIX_CONFIGURATION["FINAL_SKILL_MATRIX_OUTPUT_PATH"])
+        gap_df = pd.read_csv(COURSE_RECOMMENDATIONS_CONFIGURATION["GAP_MATRIX_PATH"])
+        course_df = pd.read_csv(
+            RECOMMENDATION_MATRIX_CONFIGURATION[
+                "FINAL_RECOMMENDATION_MATRIX_OUTPUT_PATH"
+            ]
+        )
+        recommendations_df = pd.read_csv(
+            COURSE_RECOMMENDATIONS_CONFIGURATION[
+                "CURRENT_EMPLOYEES_RECOMMENDATIONS_PATH"
+            ]
+        )
 
         if df is None:
             return "Error loading data", 500
@@ -274,8 +263,10 @@ def api_employees():
     """API endpoint for employee search (for AJAX)."""
     search = request.args.get("q", "").lower()
 
-    df = load_data("skill_matrix_result.csv")
-    if df is None:
+    try:
+        df = pd.read_csv(SKILL_MATRIX_CONFIGURATION["FINAL_SKILL_MATRIX_OUTPUT_PATH"])
+    except Exception as e:
+        logger.error(f"Error loading skill matrix: {e}")
         return jsonify([])
 
     if search:

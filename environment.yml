@@ -5,27 +5,15 @@ channels:
   - defaults
 
 dependencies:
-  # Core Python & Data Processing
   - python=3.11
   - numpy<2
   - pandas>=2.0
   - scikit-learn
-  
-  # Web Framework
   - flask>=3.0.0
-  
-  # Data Science & Visualization
-  - matplotlib
-  - seaborn
-  - plotly
   - jupyter
   - jupyterlab
-  
-  # Development & Testing
   - pytest
   - pip
-  
-  # pip-only packages (wheel compatibility across OS)
   - pip:
       - torch==2.0.1
       - torchvision==0.15.2
