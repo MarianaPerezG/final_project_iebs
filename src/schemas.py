@@ -41,7 +41,7 @@ class SkillMatrixConfig:
 
 # Target Matrix
 @dataclass
-class SkillDemandConfig:
+class SkillDemandVectorConfig:
     dataset_path: str
     mapped_output_path: str
     skill_demand_output_path: str

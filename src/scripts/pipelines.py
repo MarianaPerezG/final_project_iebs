@@ -17,7 +17,7 @@ from schemas import (
     DatabaseConfig,
     DownloadConfig,
     RecommendationConfig,
-    SkillDemandConfig,
+    SkillDemandVectorConfig,
     SkillMatrixConfig,
     TableConfig,
     TargetMatrixConfig,
@@ -76,7 +76,7 @@ def run_pipeline():
         logging.info("Creating skill demand vector")
 
         create_skill_demand_vector_by_family(
-            config=SkillDemandConfig(
+            config=SkillDemandVectorConfig(
                 dataset_path=TARGET_DEMAND_SKILL_MATRIX_CONFIGURATION["DATASET_PATH"],
                 mapped_output_path=TARGET_DEMAND_SKILL_MATRIX_CONFIGURATION[
                     "MAPPED_OUTPUT_PATH"
@@ -86,6 +86,8 @@ def run_pipeline():
                 ],
             )
         )
+
+        logging.info("Creating target matrix")
 
         create_target_matrix(
             config=TargetMatrixConfig(

@@ -15,7 +15,7 @@ class TargetMatrixBuilder:
     alpha: float = 0.30
     beta: float = 0.50
 
-    def build(
+    def build_from_family(
         self,
         skill_matrix_df: pd.DataFrame,
         skill_demand_df: pd.DataFrame,

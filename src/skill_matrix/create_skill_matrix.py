@@ -3,9 +3,9 @@ from venv import logger
 
 import pandas as pd
 
-from skill_matrix.builder import SkillMatrixBuilder
 from schemas import SkillMatrixConfig
 from scripts.save_data import save_dataframe_to_csv
+from skill_matrix.builder import SkillMatrixBuilder
 
 
 def create_skill_matrix(

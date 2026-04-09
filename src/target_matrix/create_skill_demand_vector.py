@@ -5,7 +5,7 @@ import pandas as pd
 
 from config.global_skills import GLOBAL_SKILLS
 from config.scoring_rules import FAMILY_CORE_SKILL
-from schemas import SkillDemandConfig
+from schemas import SkillDemandVectorConfig
 from scripts.save_data import save_dataframe_to_csv
 from target_matrix.demand import (
     add_demand_score,
@@ -15,7 +15,7 @@ from target_matrix.demand import (
 from target_matrix.title_mapping import map_titles
 
 
-def create_skill_demand_vector_by_family(config: SkillDemandConfig) -> None:
+def create_skill_demand_vector_by_family(config: SkillDemandVectorConfig) -> None:
     dataset_path = Path(config.dataset_path)
     dataset = (
         list(dataset_path.rglob("*.csv"))[0] if dataset_path.is_dir() else dataset_path
@@ -29,6 +29,7 @@ def create_skill_demand_vector_by_family(config: SkillDemandConfig) -> None:
 
     try:
         df = pd.read_csv(dataset, engine="python")
+
     except Exception as e:
         raise ValueError(f"Error reading CSV: {e}")
 
