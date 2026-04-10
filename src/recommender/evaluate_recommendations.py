@@ -11,6 +11,7 @@ from recommender.create_recommendation_model import (
     CourseRecommendationModel,
     CourseRecommender,
 )
+from config.levels import get_course_level_number
 from schemas import RecommendationConfig
 
 
@@ -22,38 +23,38 @@ class RecommendationEvaluator:
         self.model = CourseRecommendationModel(
             gap_matrix_path=config.gap_matrix_path,
             course_matrix_path=config.course_matrix_path,
-            global_skills=config.global_skills,
         )
         self.recommender = CourseRecommender(self.model)
         self.gap_matrix = self.model.gap_matrix
         self.course_matrix = self.model.course_matrix
 
+        try:
+            self.recommendations_df = pd.read_csv(config.recommendations_output_path)
+            logging.info(
+                f"Loaded recommendations from {config.recommendations_output_path}"
+            )
+        except FileNotFoundError:
+            logging.warning(
+                f"Recommendations CSV not found at {config.recommendations_output_path}"
+            )
+            self.recommendations_df = pd.DataFrame()
+
     def calculate_coverage(self) -> float:
-        """% of employees that receive recommendations."""
-        all_recs = self.recommender.generate_recommendations_for_all_employees(topk=3)
-        if all_recs.empty:
+        if self.recommendations_df.empty:
             return 0.0
-        covered_employees = all_recs["employee_number"].nunique()
+        covered_employees = self.recommendations_df["employee_number"].nunique()
         total_employees = self.gap_matrix["EmployeeNumber"].nunique()
         return 100 * covered_employees / total_employees
 
     def calculate_skill_match_ratio(self, topk: int = 3) -> float:
-        """
-        Average match between gap skills and course skills.
-        Higher = better alignment.
-        """
+        if self.recommendations_df.empty:
+            return 0.0
+
         total_matches = 0
         total_gaps = 0
 
-        for emp_num in self.gap_matrix["EmployeeNumber"].unique():
+        for emp_num in self.recommendations_df["employee_number"].unique():
             try:
-                recs = self.recommender.generate_recommendations_for_employee(
-                    emp_num, topk=topk
-                )
-                if not recs:
-                    continue
-
-                # Get employee gap skills
                 user_row = self.gap_matrix[
                     self.gap_matrix["EmployeeNumber"] == emp_num
                 ].iloc[0]
@@ -63,9 +64,12 @@ class RecommendationEvaluator:
                     if float(user_row.get(skill, 0.0)) > 0
                 ]
 
-                # Check course skills vs gap skills
-                for rec in recs:
-                    course_title = rec["course_title"]
+                emp_recommendations = self.recommendations_df[
+                    self.recommendations_df["employee_number"] == emp_num
+                ]
+
+                for _, reccomendation in emp_recommendations.iterrows():
+                    course_title = reccomendation["course_title"]
                     course_row = self.course_matrix[
                         self.course_matrix["course_title"] == course_title
                     ]
@@ -76,7 +80,7 @@ class RecommendationEvaluator:
                             for skill in GLOBAL_SKILLS
                             if float(course_row.get(skill, 0.0)) > 0.2
                         ]
-                        # Match: intersection of gap_skills and taught_skills
+
                         matches = len(set(gap_skills) & set(taught_skills))
                         total_matches += matches
                         total_gaps += len(gap_skills) if gap_skills else 1
@@ -89,42 +93,11 @@ class RecommendationEvaluator:
             return 0.0
         return total_matches / total_gaps
 
-    def calculate_diversity(self, topk: int = 3) -> float:
-        """
-        Std dev of final scores. Higher = more diverse recommendations.
-        Lower = concentrated around same score.
-        """
-        all_scores = []
-
-        for emp_num in self.gap_matrix["EmployeeNumber"].unique():
-            try:
-                recs = self.recommender.generate_recommendations_for_employee(
-                    emp_num, topk=topk
-                )
-                for rec in recs:
-                    all_scores.append(rec["final_score"])
-            except Exception as e:
-                logging.warning(f"Could not evaluate employee {emp_num}: {e}")
-                continue
-
-        if not all_scores:
-            return 0.0
-        return float(np.std(all_scores))
-
     def calculate_semantic_stats(self) -> Dict[str, float]:
-        """Statistics on semantic similarity scores."""
-        all_semantic_scores = []
+        if self.recommendations_df.empty:
+            return {"mean": 0.0, "std": 0.0, "min": 0.0, "max": 0.0}
 
-        for emp_num in self.gap_matrix["EmployeeNumber"].unique():
-            try:
-                recs = self.recommender.generate_recommendations_for_employee(
-                    emp_num, topk=3
-                )
-                for rec in recs:
-                    all_semantic_scores.append(rec["semantic_similarity"])
-            except Exception as e:
-                logging.warning(f"Could not evaluate employee {emp_num}: {e}")
-                continue
+        all_semantic_scores = self.recommendations_df["semantic_similarity"].tolist()
 
         if not all_semantic_scores:
             return {"mean": 0.0, "std": 0.0, "min": 0.0, "max": 0.0}
@@ -137,23 +110,24 @@ class RecommendationEvaluator:
         }
 
     def calculate_level_compatibility(self) -> Dict[str, float]:
-        """% of recommendations within ±1 level of employee."""
-        from config.levels import get_course_level_number
+
+        if self.recommendations_df.empty:
+            return {"percentage": 0.0}
 
         within_level = 0
         total_recs = 0
 
-        for emp_num in self.gap_matrix["EmployeeNumber"].unique():
+        for emp_num in self.recommendations_df["employee_number"].unique():
             try:
                 user_row = self.gap_matrix[
                     self.gap_matrix["EmployeeNumber"] == emp_num
                 ].iloc[0]
                 emp_level = int(user_row.get("JobLevel", 3))
 
-                recs = self.recommender.generate_recommendations_for_employee(
-                    emp_num, topk=3
-                )
-                for rec in recs:
+                emp_recs = self.recommendations_df[
+                    self.recommendations_df["employee_number"] == emp_num
+                ]
+                for _, rec in emp_recs.iterrows():
                     course_level_str = rec["course_level"]
                     course_level = get_course_level_number(course_level_str)
                     if abs(course_level - emp_level) <= 1:
@@ -169,63 +143,15 @@ class RecommendationEvaluator:
         return {"percentage": 100 * within_level / total_recs}
 
     def sample_employees_for_manual_validation(self, n_samples: int = 10) -> List[int]:
-        """Sample n random employees for manual validation."""
         all_employees = self.gap_matrix["EmployeeNumber"].unique().tolist()
         return random.sample(all_employees, min(n_samples, len(all_employees)))
 
-    def generate_manual_validation_report(
-        self, employee_numbers: List[int]
-    ) -> pd.DataFrame:
-        """Generate report for manual annotation of recommendations."""
-        records = []
-
-        for emp_num in employee_numbers:
-            try:
-                user_row = self.gap_matrix[
-                    self.gap_matrix["EmployeeNumber"] == emp_num
-                ].iloc[0]
-                job_role = user_row.get("JobRole", "Unknown")
-                job_level = user_row.get("JobLevel", 3)
-
-                recs = self.recommender.generate_recommendations_for_employee(
-                    emp_num, topk=3
-                )
-
-                for rank, rec in enumerate(recs, 1):
-                    records.append(
-                        {
-                            "employee_number": emp_num,
-                            "job_role": job_role,
-                            "job_level": job_level,
-                            "rank": rank,
-                            "course_title": rec["course_title"],
-                            "course_level": rec["course_level"],
-                            "course_subject": rec["course_subject"],
-                            "cosine_similarity": rec["cosine_similarity"],
-                            "semantic_similarity": rec["semantic_similarity"],
-                            "level_factor": rec["level_factor"],
-                            "final_score": rec["final_score"],
-                            "accuracy_annotation": "",  # To be filled manually
-                            "notes": "",  # To be filled manually
-                        }
-                    )
-
-            except Exception as e:
-                logging.warning(
-                    f"Could not generate report for employee {emp_num}: {e}"
-                )
-                continue
-
-        return pd.DataFrame(records)
-
     def generate_evaluation_report(self) -> Dict:
-        """Generate comprehensive evaluation report."""
-        logging.info("Generating evaluation report...")
+        logging.info("Generating evaluation report")
 
         report = {
             "coverage": self.calculate_coverage(),
             "skill_match_ratio": self.calculate_skill_match_ratio(),
-            "diversity": self.calculate_diversity(),
             "semantic_stats": self.calculate_semantic_stats(),
             "level_compatibility": self.calculate_level_compatibility(),
         }
@@ -233,7 +159,6 @@ class RecommendationEvaluator:
         return report
 
     def save_evaluation_report(self, report: Dict, output_path: str):
-        """Save evaluation report to file."""
         path_obj = Path(output_path)
         path_obj.parent.mkdir(parents=True, exist_ok=True)
 
@@ -259,7 +184,6 @@ class RecommendationEvaluator:
 
             f.write("\n3. DIVERSITY METRICS\n")
             f.write("-" * 80 + "\n")
-            f.write(f"Score Diversity (Std Dev): {report['diversity']:.4f}\n")
             f.write(
                 f"Interpretation: Higher is better (recommendations vary in quality)\n"
             )
@@ -290,45 +214,42 @@ class RecommendationEvaluator:
 
         logging.info(f"Evaluation report saved to: {output_path}")
 
-    def save_manual_validation_template(self, df: pd.DataFrame, output_path: str):
+    def save_manual_validation_template(self, output_path: str):
         """Save manual validation template as CSV."""
         path_obj = Path(output_path)
         path_obj.parent.mkdir(parents=True, exist_ok=True)
 
-        df.to_csv(output_path, index=False)
+        # Create validation template DataFrame
+        template_data = []
+        recommendations_sample = self.recommendations_df.head(
+            30
+        )  # First 30 recommendations
+
+        for _, row in recommendations_sample.iterrows():
+            template_data.append(
+                {
+                    "employee_number": row.get("employee_number"),
+                    "rank": row.get("rank"),
+                    "course_title": row.get("course_title"),
+                    "course_level": row.get("course_level"),
+                    "final_score": row.get("final_score"),
+                    "accuracy_annotation": "",  # To be filled by human
+                    "notes": "",
+                }
+            )
+
+        template_df = pd.DataFrame(template_data)
+        template_df.to_csv(output_path, index=False)
 
         logging.info(f"Manual validation template saved to: {output_path}")
-        logging.info("Instructions:")
-        logging.info("  1. Open the CSV file and review each recommendation")
-        logging.info(
-            "  2. For each row, fill 'accuracy_annotation' column with one of:"
-        )
-        logging.info("     - 'Excellent': Highly relevant recommendation")
-        logging.info("     - 'Good': Reasonably relevant")
-        logging.info("     - 'Poor': Not relevant")
-        logging.info("  3. Optional: Add notes explaining your decision")
 
 
 def run_evaluation(config: RecommendationConfig):
-    """Run complete evaluation pipeline."""
+
     evaluator = RecommendationEvaluator(config)
 
-    # Generate evaluation report
     report = evaluator.generate_evaluation_report()
     evaluator.save_evaluation_report(report, "reports/recommendation_evaluation.txt")
+    evaluator.save_manual_validation_template("reports/manual_validation_template.csv")
 
-    # Generate manual validation template
-    sample_employees = evaluator.sample_employees_for_manual_validation(n_samples=10)
-    validation_df = evaluator.generate_manual_validation_report(sample_employees)
-    evaluator.save_manual_validation_template(
-        validation_df, "reports/manual_validation_template.csv"
-    )
-
-    logging.info("=" * 80)
-    logging.info("EVALUATION COMPLETE")
-    logging.info("=" * 80)
-    logging.info("Reports generated:")
-    logging.info("  1. reports/recommendation_evaluation.txt - Automated metrics")
-    logging.info(
-        "  2. reports/manual_validation_template.csv - To be annotated manually"
-    )
+    logging.info("Recommendation model evaluation complete.")

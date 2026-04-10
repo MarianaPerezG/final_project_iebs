@@ -1,11 +1,15 @@
+import __main__
+import logging
+import os
 from pathlib import Path
-from venv import logger
 
 import pandas as pd
 
 from schemas import SkillMatrixConfig
 from scripts.save_data import save_dataframe_to_csv
 from skill_matrix.builder import SkillMatrixBuilder
+
+logger = logging.getLogger(__name__)
 
 
 def create_skill_matrix(
@@ -29,6 +33,9 @@ def create_skill_matrix(
 
     try:
         df = pd.read_csv(dataset)
+        if __main__.DEV_MODE:
+            df = df.head(100)
+            logger.warning("DEVELOPMENT MODE: Processing only 100 records for speed")
     except Exception as e:
         raise ValueError(f"Error reading CSV: {e}")
 

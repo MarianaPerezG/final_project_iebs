@@ -12,7 +12,9 @@ from config.levels import get_course_level_number
 from recommender.semantic_scoring_model import (
     create_course_semantic_embeddings,
     create_employee_description_embeddings,
+    create_employee_descriptions_batch,
 )
+from config.global_skills import GLOBAL_SKILLS
 
 
 class CourseRecommendationModel:
@@ -21,12 +23,11 @@ class CourseRecommendationModel:
         self,
         gap_matrix_path: str,
         course_matrix_path: str,
-        global_skills: List[str],
         model_path: Optional[str] = None,
     ):
         self.gap_matrix_path = gap_matrix_path
         self.course_matrix_path = course_matrix_path
-        self.global_skills = global_skills
+        self.global_skills = GLOBAL_SKILLS
         self.model_path = (
             model_path or "models/trained/course_recommendations_model.pkl"
         )
@@ -78,7 +79,32 @@ class CourseRecommender:
         self.course_matrix = model.course_matrix
         self.global_skills = model.global_skills
 
+        logging.info("Creatingcourse embeddings and vectors")
         self._course_embeddings = create_course_semantic_embeddings(self.course_matrix)
+
+        self._course_matrix_values = np.array(
+            [
+                normalize(
+                    np.array(
+                        [float(row.get(skill, 0.0)) for skill in self.global_skills]
+                    ).reshape(1, -1),
+                    axis=1,
+                    norm="l2",
+                ).ravel()
+                for _, row in self.course_matrix.iterrows()
+            ]
+        )
+
+        self._course_levels = np.array(
+            [
+                get_course_level_number(str(row.get("level", "intermediate")))
+                for _, row in self.course_matrix.iterrows()
+            ]
+        )
+
+        logging.info(
+            f"Created: {len(self._course_embeddings)} course embeddings, {self._course_matrix_values.shape} skill vectors"
+        )
 
     def _level_compatibility_factor(self, course_level: str, job_level: int) -> float:
         course_lvl_num = get_course_level_number(course_level)
@@ -127,7 +153,6 @@ class CourseRecommender:
     ) -> List[dict]:
         gap_vec, job_level = self._get_user_gap_vector(employee_number)
 
-        # Encode employee ONCE, outside the loop
         employee_embedding = create_employee_description_embeddings(
             self.gap_matrix, employee_number
         )
@@ -142,7 +167,10 @@ class CourseRecommender:
             if total_score == 0:
                 continue
 
-            course_vec, course_level = self._get_course_vector(course_idx)
+            course_vec = self._course_matrix_values[course_idx]
+            course_level = str(
+                self.course_matrix.iloc[course_idx].get("level", "intermediate")
+            )
 
             # Numeric similarity (original cosine)
             cosine_sim = np.dot(gap_vec, course_vec)
@@ -174,31 +202,91 @@ class CourseRecommender:
         return recommendations[:topk]
 
     def generate_recommendations_for_all_employees(self, topk: int = 3) -> pd.DataFrame:
+        """
+        Vectorized batch generation for all employees using pre-cached course data.
+        Much faster than calling generate_recommendations_for_employee per employee.
+        """
+        logging.info(
+            "Generating recommendations using cached course vectors and embeddings..."
+        )
+
+        gap_matrix_values = np.array(
+            [
+                normalize(
+                    np.array(
+                        [float(row.get(skill, 0.0)) for skill in self.global_skills]
+                    ).reshape(1, -1),
+                    axis=1,
+                    norm="l2",
+                ).ravel()
+                for _, row in self.gap_matrix.iterrows()
+            ]
+        )
+
+        employee_numbers = self.gap_matrix["EmployeeNumber"].values
+        employee_levels = self.gap_matrix["JobLevel"].values
+
+        course_matrix_values = self._course_matrix_values
+        course_levels = self._course_levels
+
+        cosine_similarities = gap_matrix_values @ course_matrix_values.T
+
+        # Use BATCH encoding: encode all 282 employees in ONE model.encode() call
+        employee_embeddings = create_employee_descriptions_batch(
+            self.gap_matrix
+        )  # Shape: (282, 384)
+
+        semantic_similarities = np.dot(employee_embeddings, self._course_embeddings.T)
+        semantic_similarities = np.clip(semantic_similarities, 0.0, 1.0)
+
+        level_diffs = np.abs(
+            employee_levels.reshape(-1, 1) - course_levels.reshape(1, -1)
+        )
+        level_factors = np.where(
+            level_diffs <= 1,
+            1.0 - (level_diffs * 0.1),
+            np.maximum(0.3, 1.0 - (level_diffs * 0.25)),
+        )
+
+        final_scores = (
+            0.4 * cosine_similarities
+            + 0.4 * semantic_similarities
+            + 0.2 * level_factors
+        )
+
         all_recommendations = []
 
-        for emp_num in self.gap_matrix["EmployeeNumber"].unique():
-            try:
-                recs = self.generate_recommendations_for_employee(emp_num, topk=topk)
-                for rank, rec in enumerate(recs, 1):
+        for emp_idx, emp_num in enumerate(employee_numbers):
+            employee_scores = final_scores[emp_idx]
+            topk_indices = np.argsort(employee_scores)[-topk:][::-1]  # Descending order
+
+            for rank_idx, course_idx in enumerate(topk_indices, 1):
+                if employee_scores[course_idx] > 0:  # Only include non-zero scores
+                    course_row = self.course_matrix.iloc[course_idx]
+
                     all_recommendations.append(
                         {
-                            "employee_number": rec["employee_number"],
-                            "rank": rank,
-                            "course_title": rec["course_title"],
-                            "course_level": rec["course_level"],
-                            "course_subject": rec["course_subject"],
-                            "cosine_similarity": rec["cosine_similarity"],
-                            "semantic_similarity": rec["semantic_similarity"],
-                            "level_factor": rec["level_factor"],
-                            "final_score": rec["final_score"],
+                            "employee_number": int(emp_num),
+                            "rank": rank_idx,
+                            "course_title": course_row.get("course_title", ""),
+                            "course_level": course_row.get("level", "intermediate"),
+                            "course_subject": course_row.get("subject", ""),
+                            "cosine_similarity": round(
+                                float(cosine_similarities[emp_idx, course_idx]), 4
+                            ),
+                            "semantic_similarity": round(
+                                float(semantic_similarities[emp_idx, course_idx]), 4
+                            ),
+                            "level_factor": round(
+                                float(level_factors[emp_idx, course_idx]), 4
+                            ),
+                            "final_score": round(float(employee_scores[course_idx]), 4),
                         }
                     )
-            except Exception as e:
-                logging.warning(
-                    f"Could not generate recommendations for employee {emp_num}: {e}"
-                )
-                continue
 
+        logging.info(
+            f"Generated {len(all_recommendations)} recommendations via cached vectorization"
+        )
         return pd.DataFrame(all_recommendations)
 
 
@@ -208,7 +296,6 @@ def _train_and_save_model(config: RecommendationConfig) -> CourseRecommendationM
     model = CourseRecommendationModel(
         gap_matrix_path=config.gap_matrix_path,
         course_matrix_path=config.course_matrix_path,
-        global_skills=config.global_skills,
         model_path=config.model_output_path,
     )
 
@@ -226,7 +313,7 @@ def generate_recommendations(config: RecommendationConfig):
 
     logging.info("Generating recommendations for all employees")
     recommendations_df = recommender.generate_recommendations_for_all_employees(
-        topk=config.topk
+        topk=config.top_k
     )
 
     if recommendations_df.empty:

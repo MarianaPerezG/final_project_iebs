@@ -1,5 +1,5 @@
+import logging
 from pathlib import Path
-from venv import logger
 
 import pandas as pd
 
@@ -8,6 +8,8 @@ from schemas import TargetMatrixConfig
 from scripts.save_data import save_dataframe_to_csv
 from target_matrix.builder import TargetMatrixBuilder
 from target_matrix.goals import get_company_goals
+
+logger = logging.getLogger(__name__)
 
 
 def create_target_matrix(config: TargetMatrixConfig) -> None:

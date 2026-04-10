@@ -1,0 +1,101 @@
+job_id,title,ibm_role,role_match,role_similarity,family,role_mapped,family_mapped
+921716,Marketing Coordinator,,,,,False,False
+1829192,Mental Health Therapist/Counselor,,,,,False,False
+10998357,Assitant Restaurant Manager,,,,,False,False
+23221523,Senior Elder Law / Trusts and Estates Associate Attorney,,,,,False,False
+35982263, Service Technician,,,,,False,False
+91700727,Economic Development and Planning Intern,,,,,False,False
+103254301,Producer,,,,,False,False
+112576855,Building Engineer,,,,,False,False
+1218575,Respiratory Therapist,,,,,False,False
+2264355,Worship Leader,,,,,False,False
+9615617,Inside Customer Service Associate,,,,,False,False
+11009123,Project Architect,Manager,semantic,0.7886967062950134,business_operations,True,True
+56482768,Appalachian Highlands Women's Business Center,,,,,False,False
+56924323,Structural Engineer,,,,,False,False
+69333422,Senior Product Marketing Manager,,,,,False,False
+83789755,Osteogenic Loading Coach,,,,,False,False
+95428182,Administrative Coordinator,,,,,False,False
+103860943,Customer Service / Reservationist,,,,,False,False
+111513530,"Content Writer, Communications",,,,,False,False
+115639136,Controller,,,,,False,False
+117675818,Physician Assistant,,,,,False,False
+121605673,Licensed Acupuncturist,,,,,False,False
+133130219,Software Engineer,,,,,False,False
+134286190,Sheet Metal Fabricator,,,,,False,False
+136743465,Personal Injury Attorney,,,,,False,False
+141969940,NPE 2024 Exhibition Event Worker,,,,,False,False
+175485704,Software Engineer,,,,,False,False
+196406165,Loan Coordinator,,,,,False,False
+227832999,General Laborer,,,,,False,False
+228003844,Swim Instructor,,,,,False,False
+229924287,Administrative Assistant,,,,,False,False
+231010577,Service / Construction Technician,,,,,False,False
+243731357,Legal Secretary,,,,,False,False
+258868844,Salesperson,,ambiguous,0.8126887083053589,,False,False
+263583866,Registered Nurse,,,,,False,False
+266566927,Marketing & Office Coordinator,,,,,False,False
+266825034,Software Support Specialist,,,,,False,False
+280496925,Coordinator for Multicultural Student Organizations,,,,,False,False
+345332937,Barber,,,,,False,False
+358267047,Production Planner (Food Technologist),,,,,False,False
+368586246,Embryologist,,,,,False,False
+445337908,Chief Operating Officer,,,,,False,False
+606178500,Associate Attorney,,,,,False,False
+634823509,HVAC Technician,,,,,False,False
+658723396,External Mortgage Loan Officer,,,,,False,False
+705356075,TREC licensed Professional Home Inspector,,,,,False,False
+805229245,"Manager, Retail Pharmacy",,,,,False,False
+844454682,Commercial Property Manager,,,,,False,False
+857299959,SALES,,,,,False,False
+935210241,Transactional Attorney,,,,,False,False
+974774701,Blog writer and virtual assistant,,,,,False,False
+1014822088,Marketing Specialist,,,,,False,False
+1093227543,Sales Associate Natural Food Products,,,,,False,False
+1129235875,Industrial Sales Representative,Sales Representative,exact,100.0,client_partnerships,True,True
+1143359956,National Sales Manager,,,,,False,False
+1168783207,Reps manager,,,,,False,False
+1183148438,"Montessori Lead Guide, Primary",,,,,False,False
+1219205895,Director of Training,,,,,False,False
+1448163866,Office Manager,Manager,exact,100.0,business_operations,True,True
+1573178251,Social Media Coordinator,,,,,False,False
+1586552873,Equity Institutional Sales Position,,,,,False,False
+1755471110,Front Desk Administrator,,,,,False,False
+1826257634,Social Security Specialist / Retirement Benefit Advisor (Remote),,,,,False,False
+1880409118,Board Certified Behavior Analyst,,,,,False,False
+2011147642,Lead Installer,,,,,False,False
+2147609712,Med-RN ER,,,,,False,False
+2147609754,Workflow Coordinator Hospitality - Mon - Fri 8am-5pm,,,,,False,False
+2147609766,Sales Representative,Sales Representative,exact,100.0,client_partnerships,True,True
+2147609774,Dental Hygienist - choose your shift,,,,,False,False
+2147609785,FP&A Analyst,,,,,False,False
+2147609789,Entry Level Oracle Financial Technology Consultant,,,,,False,False
+2147609816,Maintenance Mechanic,,,,,False,False
+2147609835,Trade Review Principal,,,,,False,False
+2147609840,Mover/Junk Hauler/Crew Member,,,,,False,False
+2147609858,Dental CAD/CAM Designer - $20-$30/hour,,,,,False,False
+2147609929,Production Planner,,,,,False,False
+2157930553,Customer Service Representative,,,,,False,False
+2195921577,Associate Planner,,,,,False,False
+2234533717,Full Stack Engineer,,,,,False,False
+2269442456,Computer Scientist,,,,,False,False
+2314566469,Front end specialist,,,,,False,False
+2372177891,Client Service Associate,,,,,False,False
+2404832493,Sales and Design consultant,,,,,False,False
+2428973832,Staff Accountant,,,,,False,False
+2457183642,Quality Assurance Manager,,,,,False,False
+2558399667,"Validation Engineer, Labware LIMS",,,,,False,False
+2735151240,Intern- Business Analytics,,,,,False,False
+2737009242,Service Manager,,,,,False,False
+2747409392,Robot Monitor & Maintenance Technician,,,,,False,False
+2748500131,Director of Public Works,,,,,False,False
+2790549389,National Sales Manager,,,,,False,False
+2796728000,Fire Sprinkler Designer,,,,,False,False
+2826285517,"Assistant Director of Admission, Midwest Regional Representative",,,,,False,False
+2838336689,Executive Assistant,,,,,False,False
+2914254129,Director of Operations,,,,,False,False
+2920450495,Service Coordinator,,,,,False,False
+2934066464,Fundraising Associate,,,,,False,False
+2954591060,Social Media Coordinator,,,,,False,False
+2957460032,Professional Window Cleaning Technician,,,,,False,False
+2974397965,Marketing Coordinator,,,,,False,False

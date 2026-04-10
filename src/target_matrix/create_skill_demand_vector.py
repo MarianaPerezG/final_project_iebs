@@ -1,7 +1,10 @@
+import __main__
+import logging
+import os
 from pathlib import Path
-from venv import logger
 
 import pandas as pd
+
 
 from config.global_skills import GLOBAL_SKILLS
 from config.scoring_rules import FAMILY_CORE_SKILL
@@ -13,6 +16,8 @@ from target_matrix.demand import (
     build_skill_demand_vector_by_family,
 )
 from target_matrix.title_mapping import map_titles
+
+logger = logging.getLogger(__name__)
 
 
 def create_skill_demand_vector_by_family(config: SkillDemandVectorConfig) -> None:
@@ -29,6 +34,9 @@ def create_skill_demand_vector_by_family(config: SkillDemandVectorConfig) -> Non
 
     try:
         df = pd.read_csv(dataset, engine="python")
+        if __main__.DEV_MODE:
+            df = df.head(100)
+            logger.warning("DEVELOPMENT MODE: Processing only 100 records for speed")
 
     except Exception as e:
         raise ValueError(f"Error reading CSV: {e}")

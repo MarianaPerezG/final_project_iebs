@@ -80,6 +80,6 @@ def build_skill_demand_vector_by_family(
 
     result = pd.DataFrame({"skill": global_skills})
     result = result.merge(skill_demand, on="skill", how="left")
-    result["skill_demand"] = result["skill_demand"].fillna(0.0)
+    result["demand_score"] = result["demand_score"].fillna(0.0)
 
     return result

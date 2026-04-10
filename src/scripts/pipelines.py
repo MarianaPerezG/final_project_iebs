@@ -25,6 +25,7 @@ from schemas import (
 from scripts.create_database import create_database
 from scripts.download_data import download_kaggle_datasets
 from skill_matrix.create_skill_matrix import create_skill_matrix
+from recommender.evaluate_recommendations import run_evaluation
 from target_matrix.create_skill_demand_vector import (
     create_skill_demand_vector_by_family,
 )
@@ -148,11 +149,24 @@ def run_pipeline():
                     "COURSE_MATRIX_PATH"
                 ],
                 model_output_path=COURSE_RECOMMENDATIONS_CONFIGURATION["MODEL_PATH"],
-                global_skills=list(GLOBAL_SKILLS),
                 recommendations_output_path=COURSE_RECOMMENDATIONS_CONFIGURATION[
                     "CURRENT_EMPLOYEES_RECOMMENDATIONS_PATH"
                 ],
-                topk=3,
+                top_k=3,
+            )
+        )
+
+        run_evaluation(
+            config=RecommendationConfig(
+                gap_matrix_path=COURSE_RECOMMENDATIONS_CONFIGURATION["GAP_MATRIX_PATH"],
+                course_matrix_path=COURSE_RECOMMENDATIONS_CONFIGURATION[
+                    "COURSE_MATRIX_PATH"
+                ],
+                model_output_path=COURSE_RECOMMENDATIONS_CONFIGURATION["MODEL_PATH"],
+                recommendations_output_path=COURSE_RECOMMENDATIONS_CONFIGURATION[
+                    "CURRENT_EMPLOYEES_RECOMMENDATIONS_PATH"
+                ],
+                top_k=3,
             )
         )
 

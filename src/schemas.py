@@ -83,5 +83,4 @@ class RecommendationConfig:
     course_matrix_path: str
     model_output_path: str
     recommendations_output_path: str
-    global_skills: List[str]
-    topk: int
+    top_k: int

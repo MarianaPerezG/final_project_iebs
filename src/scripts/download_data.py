@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 from typing import List
 from venv import logger
@@ -8,6 +9,8 @@ import pandas as pd
 import os
 
 from schemas import DownloadConfig
+
+logger = logging.getLogger(__name__)
 
 
 def download_kaggle_datasets(configs: list[DownloadConfig]):
