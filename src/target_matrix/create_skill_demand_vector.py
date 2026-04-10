@@ -1,10 +1,9 @@
-import __main__
 import logging
 import os
 from pathlib import Path
 
+import __main__
 import pandas as pd
-
 
 from config.global_skills import GLOBAL_SKILLS
 from config.scoring_rules import FAMILY_CORE_SKILL

@@ -1,6 +1,7 @@
 import logging
-from pathlib import Path
 import sqlite3
+from pathlib import Path
+
 import pandas as pd
 
 from schemas import DatabaseConfig
@@ -59,13 +60,11 @@ def create_database(config: DatabaseConfig):
                 )
                 df.to_sql(table_name, conn, if_exists="fail", index=False)
 
-        cursor.execute(
-            """
+        cursor.execute("""
             SELECT name
             FROM sqlite_master
             WHERE type='table';
-        """
-        )
+        """)
         tables = [row[0] for row in cursor.fetchall()]
         logging.info("Tables in database: %s", tables)
 
