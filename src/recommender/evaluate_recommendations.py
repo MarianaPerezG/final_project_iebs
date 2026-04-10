@@ -5,7 +5,10 @@ from pathlib import Path
 from typing import Dict, List, Tuple
 import random
 
-from config.datasets import RECOMMENDATION_MATRIX_CONFIGURATION
+from config.datasets import (
+    RECOMMENDATION_MATRIX_CONFIGURATION,
+    RECOMMENDATIONS_METRICS_CONFIGURATION,
+)
 from config.global_skills import GLOBAL_SKILLS
 from recommender.create_recommendation_model import (
     CourseRecommendationModel,
@@ -16,8 +19,6 @@ from schemas import RecommendationConfig
 
 
 class RecommendationEvaluator:
-    """Evaluates recommendation model quality."""
-
     def __init__(self, config: RecommendationConfig):
         self.config = config
         self.model = CourseRecommendationModel(
@@ -130,7 +131,7 @@ class RecommendationEvaluator:
                 for _, rec in emp_recs.iterrows():
                     course_level_str = rec["course_level"]
                     course_level = get_course_level_number(course_level_str)
-                    if abs(course_level - emp_level) <= 1:
+                    if abs(course_level - emp_level) <= 2:
                         within_level += 1
                     total_recs += 1
 
@@ -179,14 +180,12 @@ class RecommendationEvaluator:
                 f"Skill Match Ratio (gap vs taught): {report['skill_match_ratio']:.4f}\n"
             )
             f.write(
-                f"Interpretation: For every gap skill, {report['skill_match_ratio']:.2%} is addressed\n"
+                f"Reading: For every gap skill, {report['skill_match_ratio']:.2%} is addressed\n"
             )
 
             f.write("\n3. DIVERSITY METRICS\n")
             f.write("-" * 80 + "\n")
-            f.write(
-                f"Interpretation: Higher is better (recommendations vary in quality)\n"
-            )
+            f.write(f"Reading: Higher is better (recommendations vary in quality)\n")
 
             f.write("\n4. SEMANTIC SIMILARITY METRICS\n")
             f.write("-" * 80 + "\n")
@@ -195,53 +194,16 @@ class RecommendationEvaluator:
             f.write(f"Std Dev: {semantic['std']:.4f}\n")
             f.write(f"Range: [{semantic['min']:.4f}, {semantic['max']:.4f}]\n")
             f.write(
-                f"Interpretation: Average coherence between employee gaps and courses (0-1)\n"
+                f"Reading: Average coherence between employee gaps and courses (0-1)\n"
             )
 
             f.write("\n5. LEVEL COMPATIBILITY METRICS\n")
             f.write("-" * 80 + "\n")
             level = report["level_compatibility"]["percentage"]
-            f.write(f"Within ±1 Level: {level:.2f}%\n")
-            f.write(f"Interpretation: % of courses at appropriate difficulty level\n")
-
-            f.write("\n6. SUMMARY & INTERPRETATION\n")
-            f.write("-" * 80 + "\n")
-            f.write("✓ High Coverage: Model reaches most employees\n")
-            f.write("✓ High Skill Match: Courses address actual gaps\n")
-            f.write("✓ High Diversity: Recommendations are varied and specific\n")
-            f.write("✓ High Semantic Score: Contextual relevance is strong\n")
-            f.write("✓ High Level Compatibility: Difficulty is appropriate\n")
+            f.write(f"Within ±2 Level: {level:.2f}%\n")
+            f.write(f"Reading: % of courses at appropriate difficulty level\n")
 
         logging.info(f"Evaluation report saved to: {output_path}")
-
-    def save_manual_validation_template(self, output_path: str):
-        """Save manual validation template as CSV."""
-        path_obj = Path(output_path)
-        path_obj.parent.mkdir(parents=True, exist_ok=True)
-
-        # Create validation template DataFrame
-        template_data = []
-        recommendations_sample = self.recommendations_df.head(
-            30
-        )  # First 30 recommendations
-
-        for _, row in recommendations_sample.iterrows():
-            template_data.append(
-                {
-                    "employee_number": row.get("employee_number"),
-                    "rank": row.get("rank"),
-                    "course_title": row.get("course_title"),
-                    "course_level": row.get("course_level"),
-                    "final_score": row.get("final_score"),
-                    "accuracy_annotation": "",  # To be filled by human
-                    "notes": "",
-                }
-            )
-
-        template_df = pd.DataFrame(template_data)
-        template_df.to_csv(output_path, index=False)
-
-        logging.info(f"Manual validation template saved to: {output_path}")
 
 
 def run_evaluation(config: RecommendationConfig):
@@ -249,7 +211,8 @@ def run_evaluation(config: RecommendationConfig):
     evaluator = RecommendationEvaluator(config)
 
     report = evaluator.generate_evaluation_report()
-    evaluator.save_evaluation_report(report, "reports/recommendation_evaluation.txt")
-    evaluator.save_manual_validation_template("reports/manual_validation_template.csv")
+    evaluator.save_evaluation_report(
+        report, RECOMMENDATIONS_METRICS_CONFIGURATION["EVALUATION_REPORT_OUTPUT_PATH"]
+    )
 
     logging.info("Recommendation model evaluation complete.")

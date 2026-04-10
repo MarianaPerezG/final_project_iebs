@@ -1,3 +1,4 @@
+import __main__
 import logging
 
 from api.singleton import get_courses_api
@@ -35,112 +36,118 @@ from target_matrix.create_target_matrix import create_target_matrix
 def run_pipeline():
 
     try:
-        logging.info("Starting dataset download")
 
-        download_kaggle_datasets(
-            [
-                DownloadConfig(
-                    dataset_ref=DATASETS_CONFIGURATION["SKILL_MATRIX_DATASET_REF"],
-                    output_path=DATASETS_CONFIGURATION["SKILL_MATRIX_OUTPUT_PATH"],
-                ),
-                DownloadConfig(
-                    dataset_ref=DATASETS_CONFIGURATION[
-                        "TARGET_DEMAND_SKILL_MATRIX_DATASET_REF"
-                    ],
-                    output_path=DATASETS_CONFIGURATION[
-                        "TARGET_DEMAND_SKILL_MATRIX_OUTPUT_PATH"
-                    ],
-                ),
-                DownloadConfig(
-                    dataset_ref=DATASETS_CONFIGURATION[
-                        "COURSE_RECOMMENDATION_DATASET_REF"
-                    ],
-                    output_path=DATASETS_CONFIGURATION[
-                        "COURSE_RECOMMENDATION_OUTPUT_PATH"
-                    ],
-                ),
-            ]
-        )
+        testing_mode = getattr(__main__, "RECOMMENDATION_TESTING_MODE_ON", False)
 
-        logging.info("Dataset download completed. Creating skill matrix")
+        if not testing_mode:
+            logging.info("Starting dataset download")
 
-        create_skill_matrix(
-            global_skills=GLOBAL_SKILLS,
-            config=SkillMatrixConfig(
-                dataset_path=SKILL_MATRIX_CONFIGURATION["DATASET_PATH"],
-                final_output_path=SKILL_MATRIX_CONFIGURATION[
-                    "FINAL_SKILL_MATRIX_OUTPUT_PATH"
-                ],
-            ),
-        )
-
-        logging.info("Creating skill demand vector")
-
-        create_skill_demand_vector_by_family(
-            config=SkillDemandVectorConfig(
-                dataset_path=TARGET_DEMAND_SKILL_MATRIX_CONFIGURATION["DATASET_PATH"],
-                mapped_output_path=TARGET_DEMAND_SKILL_MATRIX_CONFIGURATION[
-                    "MAPPED_OUTPUT_PATH"
-                ],
-                skill_demand_output_path=TARGET_DEMAND_SKILL_MATRIX_CONFIGURATION[
-                    "SKILL_DEMAND_OUTPUT_PATH"
-                ],
-            )
-        )
-
-        logging.info("Creating target matrix")
-
-        create_target_matrix(
-            config=TargetMatrixConfig(
-                skill_matrix_path=TARGET_MATRIX_CONFIGURATION["SKILL_MATRIX_PATH"],
-                skill_demand_path=TARGET_MATRIX_CONFIGURATION["SKILL_DEMAND_PATH"],
-                final_output_path=TARGET_MATRIX_CONFIGURATION[
-                    "FINAL_TARGET_MATRIX_OUTPUT_PATH"
-                ],
-            )
-        )
-
-        create_database(
-            config=DatabaseConfig(
-                tables=[
-                    TableConfig(
-                        name="skills_matrix",
-                        csv_path=SKILL_MATRIX_CONFIGURATION[
-                            "FINAL_SKILL_MATRIX_OUTPUT_PATH"
+            download_kaggle_datasets(
+                [
+                    DownloadConfig(
+                        dataset_ref=DATASETS_CONFIGURATION["SKILL_MATRIX_DATASET_REF"],
+                        output_path=DATASETS_CONFIGURATION["SKILL_MATRIX_OUTPUT_PATH"],
+                    ),
+                    DownloadConfig(
+                        dataset_ref=DATASETS_CONFIGURATION[
+                            "TARGET_DEMAND_SKILL_MATRIX_DATASET_REF"
+                        ],
+                        output_path=DATASETS_CONFIGURATION[
+                            "TARGET_DEMAND_SKILL_MATRIX_OUTPUT_PATH"
                         ],
                     ),
-                    TableConfig(
-                        name="course_recommendation",
-                        csv_path=(
-                            f'{DATASETS_CONFIGURATION["COURSE_RECOMMENDATION_OUTPUT_PATH"]}/edx.csv'
-                        ),
+                    DownloadConfig(
+                        dataset_ref=DATASETS_CONFIGURATION[
+                            "COURSE_RECOMMENDATION_DATASET_REF"
+                        ],
+                        output_path=DATASETS_CONFIGURATION[
+                            "COURSE_RECOMMENDATION_OUTPUT_PATH"
+                        ],
                     ),
-                ],
-                db_path="src/config/database.db",
+                ]
             )
-        )
 
-        logging.info("Database created successfully")
+            logging.info("Dataset download completed. Creating skill matrix")
 
-        logging.info("Fetching courses from API...")
-        api = get_courses_api()
-        courses = api.get_courses()
-        logging.info(f"Retrieved {len(courses.courses)} courses from API")
-
-        create_courses_matrix(
-            config=CourseSkillsMatrixConfig(
-                courses_response=courses,
-                output_path=RECOMMENDATION_MATRIX_CONFIGURATION[
-                    "FINAL_RECOMMENDATION_MATRIX_OUTPUT_PATH"
-                ],
-                report_path=RECOMMENDATION_MATRIX_CONFIGURATION[
-                    "UNMAPPED_SKILLS_REPORT_PATH"
-                ],
-                mapping_threshold=0.75,
+            create_skill_matrix(
+                global_skills=GLOBAL_SKILLS,
+                config=SkillMatrixConfig(
+                    dataset_path=SKILL_MATRIX_CONFIGURATION["DATASET_PATH"],
+                    final_output_path=SKILL_MATRIX_CONFIGURATION[
+                        "FINAL_SKILL_MATRIX_OUTPUT_PATH"
+                    ],
+                ),
             )
-        )
 
-        logging.info("Generating course recommendations...")
+            logging.info("Creating skill demand vector")
+
+            create_skill_demand_vector_by_family(
+                config=SkillDemandVectorConfig(
+                    dataset_path=TARGET_DEMAND_SKILL_MATRIX_CONFIGURATION[
+                        "DATASET_PATH"
+                    ],
+                    mapped_output_path=TARGET_DEMAND_SKILL_MATRIX_CONFIGURATION[
+                        "MAPPED_OUTPUT_PATH"
+                    ],
+                    skill_demand_output_path=TARGET_DEMAND_SKILL_MATRIX_CONFIGURATION[
+                        "SKILL_DEMAND_OUTPUT_PATH"
+                    ],
+                )
+            )
+
+            logging.info("Creating target matrix")
+
+            create_target_matrix(
+                config=TargetMatrixConfig(
+                    skill_matrix_path=TARGET_MATRIX_CONFIGURATION["SKILL_MATRIX_PATH"],
+                    skill_demand_path=TARGET_MATRIX_CONFIGURATION["SKILL_DEMAND_PATH"],
+                    final_output_path=TARGET_MATRIX_CONFIGURATION[
+                        "FINAL_TARGET_MATRIX_OUTPUT_PATH"
+                    ],
+                )
+            )
+
+            create_database(
+                config=DatabaseConfig(
+                    tables=[
+                        TableConfig(
+                            name="skills_matrix",
+                            csv_path=SKILL_MATRIX_CONFIGURATION[
+                                "FINAL_SKILL_MATRIX_OUTPUT_PATH"
+                            ],
+                        ),
+                        TableConfig(
+                            name="course_recommendation",
+                            csv_path=(
+                                f'{DATASETS_CONFIGURATION["COURSE_RECOMMENDATION_OUTPUT_PATH"]}/edx.csv'
+                            ),
+                        ),
+                    ],
+                    db_path="src/config/database.db",
+                )
+            )
+
+            logging.info("Database created successfully")
+
+            logging.info("Fetching courses from API...")
+            api = get_courses_api()
+            courses = api.get_courses()
+            logging.info(f"Retrieved {len(courses.courses)} courses from API")
+
+            create_courses_matrix(
+                config=CourseSkillsMatrixConfig(
+                    courses_response=courses,
+                    output_path=RECOMMENDATION_MATRIX_CONFIGURATION[
+                        "FINAL_RECOMMENDATION_MATRIX_OUTPUT_PATH"
+                    ],
+                    report_path=RECOMMENDATION_MATRIX_CONFIGURATION[
+                        "UNMAPPED_SKILLS_REPORT_PATH"
+                    ],
+                    mapping_threshold=0.75,
+                )
+            )
+
+            logging.info("Generating course recommendations...")
 
         generate_recommendations(
             config=RecommendationConfig(

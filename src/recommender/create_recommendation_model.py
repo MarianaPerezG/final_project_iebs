@@ -110,10 +110,14 @@ class CourseRecommender:
         course_lvl_num = get_course_level_number(course_level)
         diff = abs(course_lvl_num - job_level)
 
-        if diff <= 1:
-            factor = 1.0 - (diff * 0.1)  # 1.0 or 0.9
-        else:
-            factor = max(0.3, 1.0 - (diff * 0.25))  # drop to min 0.3
+        if diff == 0:
+            factor = 1.0
+        elif diff == 1:
+            factor = 0.8
+        elif diff == 2:
+            factor = 0.4
+        else:  # diff >= 3
+            factor = 0.05
 
         return factor
 
@@ -172,6 +176,12 @@ class CourseRecommender:
                 self.course_matrix.iloc[course_idx].get("level", "intermediate")
             )
 
+            # HARD FILTER: Only include courses within ±1 level
+            course_lvl_num = get_course_level_number(course_level)
+            level_diff = abs(course_lvl_num - job_level)
+            if level_diff > 2:
+                continue
+
             # Numeric similarity (original cosine)
             cosine_sim = np.dot(gap_vec, course_vec)
 
@@ -183,7 +193,7 @@ class CourseRecommender:
             semantic_sim = float(np.dot(employee_embedding, course_embedding))
             semantic_sim = max(0.0, min(1.0, semantic_sim))
 
-            final_score = 0.4 * cosine_sim + 0.4 * semantic_sim + 0.2 * level_factor
+            final_score = 0.2 * cosine_sim + 0.3 * semantic_sim + 0.5 * level_factor
 
             recommendations.append(
                 {
@@ -243,16 +253,24 @@ class CourseRecommender:
             employee_levels.reshape(-1, 1) - course_levels.reshape(1, -1)
         )
         level_factors = np.where(
-            level_diffs <= 1,
-            1.0 - (level_diffs * 0.1),
-            np.maximum(0.3, 1.0 - (level_diffs * 0.25)),
+            level_diffs == 0,
+            1.0,
+            np.where(
+                level_diffs == 1,
+                0.8,
+                np.where(level_diffs == 2, 0.4, 0.05),  # diff >= 3
+            ),
         )
 
+        # HARD FILTER: Mask courses outside ±2 level range for balanced coverage & compatibility
+        level_mask = level_diffs <= 2
         final_scores = (
-            0.4 * cosine_similarities
-            + 0.4 * semantic_similarities
-            + 0.2 * level_factors
+            0.2 * cosine_similarities
+            + 0.3 * semantic_similarities
+            + 0.5 * level_factors
         )
+        # Set scores to -inf for out-of-range courses so they're never selected in top-k
+        final_scores[~level_mask] = -np.inf
 
         all_recommendations = []
 

@@ -3,6 +3,7 @@ import os
 import sys
 from pathlib import Path
 from dotenv import load_dotenv
+import argparse
 import __main__
 
 from scripts.pipelines import run_pipeline
@@ -22,11 +23,27 @@ if __name__ == "__main__":
 
     logger = logging.getLogger(__name__)
 
-    env = os.getenv("ENV", "dev").lower()
-    logger.warning(f"ENV: {env}")
+    parser = argparse.ArgumentParser(description="Run the data processing pipeline")
+    parser.add_argument(
+        "--env", type=str, default="dev", help="Set the environment (dev or prod)"
+    )
+    parser.add_argument(
+        "--test",
+        action="store_true",
+        help="Run in testing mode (skip data downloads, only recommendations)",
+    )
+    args = parser.parse_args()
+
+    env = args.env.lower()
+    recommendation_testing_mode_on = args.test
+
     __main__.DEV_MODE = env == "dev"
+    __main__.RECOMMENDATION_TESTING_MODE_ON = recommendation_testing_mode_on
+
     if __main__.DEV_MODE:
-        logger.warning("DEVELOPMENT MODE ON")
+        logger.warning("⚡ DEVELOPMENT MODE ON")
+    if __main__.RECOMMENDATION_TESTING_MODE_ON:
+        logger.warning("RECOMMENDATION TESTING MODE ON - Skipping data downloads")
 
     get_courses_api()
     logging.info("Course API initialized")

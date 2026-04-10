@@ -46,3 +46,7 @@ COMPANY_GOALS_CONFIGURATION = {
     "COMPANY_GOALS_RAW_DATASET_REF": "data/raw/company_goals.csv",
     "COMPANY_GOALS_OUTPUT_PATH": "data/final/company_goals_vector.csv",
 }
+
+RECOMMENDATIONS_METRICS_CONFIGURATION = {
+    "EVALUATION_REPORT_OUTPUT_PATH": "data/reports/recommendation_evaluation.txt"
+}

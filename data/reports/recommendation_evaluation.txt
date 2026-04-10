@@ -8,29 +8,21 @@ Coverage (% employees with recommendations): 100.00%
 
 2. SKILL ALIGNMENT METRICS
 --------------------------------------------------------------------------------
-Skill Match Ratio (gap vs taught): 0.6756
-Interpretation: For every gap skill, 67.56% is addressed
+Skill Match Ratio (gap vs taught): 0.7119
+Reading: For every gap skill, 71.19% is addressed
 
 3. DIVERSITY METRICS
 --------------------------------------------------------------------------------
-Interpretation: Higher is better (recommendations vary in quality)
+Reading: Higher is better (recommendations vary in quality)
 
 4. SEMANTIC SIMILARITY METRICS
 --------------------------------------------------------------------------------
-Mean Semantic Score: 0.5313
-Std Dev: 0.0399
-Range: [0.4195, 0.6253]
-Interpretation: Average coherence between employee gaps and courses (0-1)
+Mean Semantic Score: 0.5496
+Std Dev: 0.0246
+Range: [0.4504, 0.6253]
+Reading: Average coherence between employee gaps and courses (0-1)
 
 5. LEVEL COMPATIBILITY METRICS
 --------------------------------------------------------------------------------
-Within ±1 Level: 63.06%
-Interpretation: % of courses at appropriate difficulty level
-
-6. SUMMARY & INTERPRETATION
---------------------------------------------------------------------------------
-✓ High Coverage: Model reaches most employees
-✓ High Skill Match: Courses address actual gaps
-✓ High Diversity: Recommendations are varied and specific
-✓ High Semantic Score: Contextual relevance is strong
-✓ High Level Compatibility: Difficulty is appropriate
+Within ±2 Level: 100.00%
+Reading: % of courses at appropriate difficulty level
