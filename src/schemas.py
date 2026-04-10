@@ -54,6 +54,12 @@ class TargetMatrixConfig:
     final_output_path: str
 
 
+@dataclass
+class CompanyGoalSkillsConfig:
+    company_goals_path: str
+    output_path: str
+
+
 # Course API
 @dataclass
 class Course:

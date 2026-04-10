@@ -3,6 +3,7 @@ import logging
 
 from api.singleton import get_courses_api
 from config.datasets import (
+    COMPANY_GOAL_SKILLS_CONFIGURATION,
     COURSE_RECOMMENDATIONS_CONFIGURATION,
     DATASETS_CONFIGURATION,
     RECOMMENDATION_MATRIX_CONFIGURATION,
@@ -14,6 +15,7 @@ from config.global_skills import GLOBAL_SKILLS
 from recommender.create_courses_matrix import create_courses_matrix
 from recommender.create_recommendation_model import generate_recommendations
 from schemas import (
+    CompanyGoalSkillsConfig,
     CourseSkillsMatrixConfig,
     DatabaseConfig,
     DownloadConfig,
@@ -31,6 +33,7 @@ from target_matrix.create_skill_demand_vector import (
     create_skill_demand_vector_by_family,
 )
 from target_matrix.create_target_matrix import create_target_matrix
+from target_matrix.create_company_goal_skills import create_company_goal_skills
 
 
 def run_pipeline():
@@ -104,6 +107,17 @@ def run_pipeline():
                     final_output_path=TARGET_MATRIX_CONFIGURATION[
                         "FINAL_TARGET_MATRIX_OUTPUT_PATH"
                     ],
+                )
+            )
+
+            logging.info("Creating company goal skills vector")
+
+            create_company_goal_skills(
+                config=CompanyGoalSkillsConfig(
+                    company_goals_path=COMPANY_GOAL_SKILLS_CONFIGURATION[
+                        "COMPANY_GOALS_PATH"
+                    ],
+                    output_path=COMPANY_GOAL_SKILLS_CONFIGURATION["OUTPUT_PATH"],
                 )
             )
 

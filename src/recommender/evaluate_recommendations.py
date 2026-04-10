@@ -6,7 +6,6 @@ from typing import Dict, List, Tuple
 import random
 
 from config.datasets import (
-    RECOMMENDATION_MATRIX_CONFIGURATION,
     RECOMMENDATIONS_METRICS_CONFIGURATION,
 )
 from config.global_skills import GLOBAL_SKILLS

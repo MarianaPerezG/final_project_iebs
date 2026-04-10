@@ -36,7 +36,7 @@ def format_skill_name(skill_name):
 
 @app.route("/")
 def home():
-    goals_df = pd.read_csv(COMPANY_GOALS_CONFIGURATION["GOALS_RAW_DATASET_REF"])
+    goals_df = pd.read_csv(COMPANY_GOALS_CONFIGURATION["COMPANY_GOALS_RAW_DATASET_REF"])
     company_goals = []
 
     if goals_df is not None:
@@ -101,7 +101,7 @@ def new_company_goals():
     goal_lines = ""
     try:
         existing_goals = pd.read_csv(
-            COMPANY_GOALS_CONFIGURATION["GOALS_RAW_DATASET_REF"]
+            COMPANY_GOALS_CONFIGURATION["COMPANY_GOALS_RAW_DATASET_REF"]
         )
     except FileNotFoundError:
         existing_goals = None
