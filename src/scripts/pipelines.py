@@ -98,6 +98,17 @@ def run_pipeline():
                 )
             )
 
+            logging.info("Creating company goal skills vector")
+
+            create_company_goal_skills(
+                config=CompanyGoalSkillsConfig(
+                    company_goals_path=COMPANY_GOAL_SKILLS_CONFIGURATION[
+                        "COMPANY_GOALS_PATH"
+                    ],
+                    output_path=COMPANY_GOAL_SKILLS_CONFIGURATION["OUTPUT_PATH"],
+                )
+            )
+
             logging.info("Creating target matrix")
 
             create_target_matrix(
@@ -107,17 +118,6 @@ def run_pipeline():
                     final_output_path=TARGET_MATRIX_CONFIGURATION[
                         "FINAL_TARGET_MATRIX_OUTPUT_PATH"
                     ],
-                )
-            )
-
-            logging.info("Creating company goal skills vector")
-
-            create_company_goal_skills(
-                config=CompanyGoalSkillsConfig(
-                    company_goals_path=COMPANY_GOAL_SKILLS_CONFIGURATION[
-                        "COMPANY_GOALS_PATH"
-                    ],
-                    output_path=COMPANY_GOAL_SKILLS_CONFIGURATION["OUTPUT_PATH"],
                 )
             )
 
