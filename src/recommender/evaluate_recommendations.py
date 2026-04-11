@@ -146,12 +146,35 @@ class RecommendationEvaluator:
         all_employees = self.gap_matrix["EmployeeNumber"].unique().tolist()
         return random.sample(all_employees, min(n_samples, len(all_employees)))
 
+    def calculate_final_score_stats(self) -> Dict[str, float]:
+        """Calculate standard statistics on the final_score column."""
+        if (
+            self.recommendations_df.empty
+            or "final_score" not in self.recommendations_df.columns
+        ):
+            return {"mean": 0.0, "std": 0.0, "min": 0.0, "max": 0.0, "median": 0.0}
+
+        final_scores = self.recommendations_df["final_score"].dropna().astype(float)
+
+        if len(final_scores) == 0:
+            return {"mean": 0.0, "std": 0.0, "min": 0.0, "max": 0.0, "median": 0.0}
+
+        return {
+            "mean": float(final_scores.mean()),
+            "std": float(final_scores.std()),
+            "min": float(final_scores.min()),
+            "max": float(final_scores.max()),
+            "median": float(final_scores.median()),
+            "count": len(final_scores),
+        }
+
     def generate_evaluation_report(self) -> Dict:
         logging.info("Generating evaluation report")
 
         report = {
             "coverage": self.calculate_coverage(),
             "skill_match_ratio": self.calculate_skill_match_ratio(),
+            "final_score_stats": self.calculate_final_score_stats(),
             "semantic_stats": self.calculate_semantic_stats(),
             "level_compatibility": self.calculate_level_compatibility(),
         }
@@ -182,9 +205,20 @@ class RecommendationEvaluator:
                 f"Reading: For every gap skill, {report['skill_match_ratio']:.2%} is addressed\n"
             )
 
-            f.write("\n3. DIVERSITY METRICS\n")
+            f.write("\n3. RECOMMENDATION SCORE STATISTICS\n")
             f.write("-" * 80 + "\n")
-            f.write(f"Reading: Higher is better (recommendations vary in quality)\n")
+            f.write(
+                "Primary metric: Overall quality of recommendations (0-1 scale)\n\n"
+            )
+            score_stats = report["final_score_stats"]
+            f.write(f"Mean Score: {score_stats['mean']:.4f}\n")
+            f.write(f"Std Dev: {score_stats['std']:.4f}\n")
+            f.write(f"Median: {score_stats['median']:.4f}\n")
+            f.write(f"Range: [{score_stats['min']:.4f}, {score_stats['max']:.4f}]\n")
+            f.write(f"Total Recommendations: {score_stats['count']}\n")
+            f.write(
+                f"Reading: Combines 0.2×cosine_similarity + 0.3×semantic_similarity + 0.5×level_compatibility\n"
+            )
 
             f.write("\n4. SEMANTIC SIMILARITY METRICS\n")
             f.write("-" * 80 + "\n")
