@@ -12,14 +12,14 @@ if str(src_path) not in sys.path:
     print(f"Added to sys.path: {src_path}")
 
 from config.datasets import (
-    COMPANY_GOALS_CONFIGURATION,
+    COMPANY_GOAL_SKILLS_CONFIGURATION,
     SKILL_MATRIX_CONFIGURATION,
     COURSE_RECOMMENDATIONS_CONFIGURATION,
     RECOMMENDATION_MATRIX_CONFIGURATION,
 )
 from config.global_skills import GLOBAL_SKILLS
 from config.levels import get_job_level_name
-from scripts.create_company_goals import create_company_goals
+from target_matrix.create_company_goals import create_company_goals
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -36,20 +36,29 @@ def format_skill_name(skill_name):
 
 @app.route("/")
 def home():
-    goals_df = pd.read_csv(COMPANY_GOALS_CONFIGURATION["COMPANY_GOALS_RAW_DATASET_REF"])
     company_goals = []
-
-    if goals_df is not None:
-        company_goals = [
-            {
-                "id": int(row["goal_id"]) if "goal_id" in row.index else index + 1,
-                "goal": row["goal"],
-            }
-            for index, (_, row) in enumerate(goals_df.iterrows())
-            if "goal" in row.index and str(row["goal"]).strip()
-        ]
-
     saved = request.args.get("saved") == "1"
+
+    try:
+        goals_df = pd.read_csv(COMPANY_GOAL_SKILLS_CONFIGURATION["COMPANY_GOALS_PATH"])
+
+        if goals_df is not None and not goals_df.empty:
+            company_goals = [
+                {
+                    "id": int(row["goal_id"]) if "goal_id" in row.index else index + 1,
+                    "goal": row["goal"],
+                }
+                for index, (_, row) in enumerate(goals_df.iterrows())
+                if "goal" in row.index and str(row["goal"]).strip()
+            ]
+    except pd.errors.EmptyDataError:
+        logger.info("Company goals file is empty")
+        company_goals = []
+    except FileNotFoundError:
+        logger.warning(
+            f"Company goals file not found at {COMPANY_GOAL_SKILLS_CONFIGURATION['COMPANY_GOALS_PATH']}"
+        )
+        company_goals = []
 
     return render_template(
         "company_home.html",
@@ -101,9 +110,9 @@ def new_company_goals():
     goal_lines = ""
     try:
         existing_goals = pd.read_csv(
-            COMPANY_GOALS_CONFIGURATION["COMPANY_GOALS_RAW_DATASET_REF"]
+            COMPANY_GOAL_SKILLS_CONFIGURATION["COMPANY_GOALS_PATH"]
         )
-    except FileNotFoundError:
+    except (FileNotFoundError, pd.errors.EmptyDataError):
         existing_goals = None
 
     if existing_goals is not None and "goal" in existing_goals.columns:
@@ -118,7 +127,6 @@ def new_company_goals():
 
 @app.route("/company-goals", methods=["POST"])
 def save_company_goals():
-    """Persist company goals into data/raw/company_goals.csv."""
     raw_goals = request.form.get("goals", "")
     goals = [line.strip() for line in raw_goals.splitlines() if line.strip()]
 

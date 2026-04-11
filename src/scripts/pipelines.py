@@ -75,6 +75,16 @@ def run_pipeline():
 
             logging.info("Dataset download completed. Creating skill matrix")
 
+            logging.info("Creating company goal skills vector")
+            create_company_goal_skills(
+                config=CompanyGoalSkillsConfig(
+                    company_goals_path=COMPANY_GOAL_SKILLS_CONFIGURATION[
+                        "COMPANY_GOALS_PATH"
+                    ],
+                    output_path=COMPANY_GOAL_SKILLS_CONFIGURATION["OUTPUT_PATH"],
+                )
+            )
+
             create_skill_matrix(
                 global_skills=GLOBAL_SKILLS,
                 config=SkillMatrixConfig(
@@ -98,17 +108,6 @@ def run_pipeline():
                     skill_demand_output_path=TARGET_DEMAND_SKILL_MATRIX_CONFIGURATION[
                         "SKILL_DEMAND_OUTPUT_PATH"
                     ],
-                )
-            )
-
-            logging.info("Creating company goal skills vector")
-
-            create_company_goal_skills(
-                config=CompanyGoalSkillsConfig(
-                    company_goals_path=COMPANY_GOAL_SKILLS_CONFIGURATION[
-                        "COMPANY_GOALS_PATH"
-                    ],
-                    output_path=COMPANY_GOAL_SKILLS_CONFIGURATION["OUTPUT_PATH"],
                 )
             )
 

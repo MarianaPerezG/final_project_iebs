@@ -1,10 +1,10 @@
 DATASETS_CONFIGURATION = {
     "SKILL_MATRIX_DATASET_REF": "marianaprezgonzlez/ibm-hr-analytics-employee-attrition-and-performance",
-    "SKILL_MATRIX_OUTPUT_PATH": "data/raw/skill_matrix.csv",
+    "SKILL_MATRIX_OUTPUT_PATH": "data/raw/kaggle/skill_matrix.csv",
     "TARGET_DEMAND_SKILL_MATRIX_DATASET_REF": "marianaprezgonzlez/linkedin-job-postings-2023-2024",
-    "TARGET_DEMAND_SKILL_MATRIX_OUTPUT_PATH": "data/raw/target_demand_skill_matrix.csv",
+    "TARGET_DEMAND_SKILL_MATRIX_OUTPUT_PATH": "data/raw/kaggle/target_demand_skill_matrix.csv",
     "COURSE_RECOMMENDATION_DATASET_REF": "marianaprezgonzlez/multi-platform-online-courses-dataset",
-    "COURSE_RECOMMENDATION_OUTPUT_PATH": "data/raw/course_recommendation.csv",
+    "COURSE_RECOMMENDATION_OUTPUT_PATH": "data/raw/kaggle/course_recommendation.csv",
 }
 
 SKILL_MATRIX_CONFIGURATION = {
@@ -53,11 +53,6 @@ COURSE_RECOMMENDATIONS_CONFIGURATION = {
     "COURSE_MATRIX_PATH": "data/final/course_skills_matrix.csv",
     "MODEL_PATH": "models/trained/course_recommendations_model.pkl",
     "CURRENT_EMPLOYEES_RECOMMENDATIONS_PATH": "data/final/course_recommendations.csv",
-}
-
-COMPANY_GOALS_CONFIGURATION = {
-    "COMPANY_GOALS_RAW_DATASET_REF": "data/raw/company_goals.csv",
-    "COMPANY_GOALS_OUTPUT_PATH": "data/final/company_goals_vector.csv",
 }
 
 RECOMMENDATIONS_METRICS_CONFIGURATION = {

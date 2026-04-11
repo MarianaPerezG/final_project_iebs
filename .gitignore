@@ -18,10 +18,8 @@ pyproject.toml
 kaggle.json
 .kaggle/
 
-# Data
-data/raw/*.csv
-data/final/*.csv
-data/reports/*.json
-
 #Database
 *.db
+
+#Data
+/data/
