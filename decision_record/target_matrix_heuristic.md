@@ -4,7 +4,7 @@
 
 <br>
 
-La Target Matrix conserva las mismas dimensiones $n \times m$ que la Skill Matrix, y ambas relacionan a los empleados con competencias.
+La «Target Matrix» conserva las mismas dimensiones $n \times m$ que la «Skill Matrix», y ambas relacionan a los empleados con competencias.
 
 <br>
 
@@ -14,13 +14,13 @@ La Target Matrix conserva las mismas dimensiones $n \times m$ que la Skill Matri
 
 <br>
 
-Para determinar las competencias demandadas por el mercado, en una primera iteración, se utiliza la competencia esencial (o skill core), definida para la familia ocupacional del rol con mayor frecuencia de aparición en el dataset [*LinkedIn Job Postings (2023-2024)*](https://www.kaggle.com/datasets/arshkon/linkedin-job-postings). Cada familia tiene una competencia esencial y el ranking de demanda de estas familias se traduce en la intensidad asignada a su competencia esencial correspondiente. Primero, se proyecta el perfil base de la familia sobre los registros de los empleados y, después, se ajustan todos los vectores resultantes en función de la puntuación de demanda por competencia y los objetivos de la empresa, expresados igualmente en competencias.
+Para determinar las competencias demandadas por el mercado, en una primera iteración, se utiliza la competencia esencial (o «Skill Core»), definida para la familia ocupacional del rol con mayor frecuencia de aparición en el dataset [*LinkedIn Job Postings (2023-2024)*](https://www.kaggle.com/datasets/arshkon/linkedin-job-postings). Cada familia tiene una competencia esencial y el ranking de demanda de estas familias se traduce en la intensidad asignada a su competencia esencial correspondiente. Primero, se proyecta el perfil base de la familia sobre los registros de los empleados y, después, se ajustan todos los vectores resultantes en función de la puntuación de demanda por competencia y los objetivos de la empresa, expresados igualmente en competencias.
 
 La demanda debe operar como multiplicador del perfil base. Si una competencia no pertenece a la identidad del rol, el mercado no debería forzar su inclusión arbitraria en él. Una demanda alta de un rol no convierte las competencias principales de ese rol en el objetivo de todos los demás.
 
 Los objetivos de empresa deben incorporarse como término aditivo. Se usan para romper con los perfiles canónicos. La empresa puede querer que ciertos roles desarrollen competencias que no son centrales en su perfil.
 
-La Target Matrix representa un nivel objetivo de dominio por lo que no debería alterar la escala 0–5. Si un empleado ya está en 5, en una competencia de la Skill Matrix, se quedará igualmente en 5 en la Target Matrix, y no habrá diferencial (o gap).
+La «Target Matrix» representa un nivel objetivo de dominio por lo que no debería alterar la escala 0–5. Si un empleado ya está en 5, en una competencia de la «Skill Matrix», se quedará igualmente en 5 en la «Target Matrix», y no habrá diferencial (o «Gap»).
 
 <br>
 

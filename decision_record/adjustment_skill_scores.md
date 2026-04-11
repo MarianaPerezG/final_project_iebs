@@ -4,7 +4,7 @@
 
 <br>
 
-Todas las entradas de empleados en el dataset [*IBM HR Analytics Employee Attrition & Performance*](https://www.kaggle.com/datasets/pavansubhasht/ibm-hr-analytics-attrition-dataset) incluyen atributos que se utilizan para calcular los vectores de competencias, ajustados por empleado, que aparecen finalmente en la «skill matrix». Para obtener estos vectores nuevos, se parte de los vectores de competencias base de los puestos de trabajo. Las métricas del empleado están representadas en los atributos `Education` (nivel de estudios) y `PerformanceRating` (calificación del rendimiento). Según los valores registrados en estos, se pondera su influencia en las distintas competencias del rol para obtener el vector de competencias del empleado.
+Todas las entradas de empleados en el dataset [*IBM HR Analytics Employee Attrition & Performance*](https://www.kaggle.com/datasets/pavansubhasht/ibm-hr-analytics-attrition-dataset) incluyen atributos que se utilizan para calcular los vectores de competencias, ajustados por empleado, que aparecen finalmente en la «Skill Matrix». Para obtener estos vectores nuevos, se parte de los vectores de competencias base de los puestos de trabajo. Las métricas del empleado están representadas en los atributos `Education` (nivel de estudios) y `PerformanceRating` (calificación del rendimiento). Según los valores registrados en estos, se pondera su influencia en las distintas competencias del rol para obtener el vector de competencias del empleado.
 
 <br>
 

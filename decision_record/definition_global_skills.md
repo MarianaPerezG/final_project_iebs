@@ -4,7 +4,20 @@
 
 <br>
 
-El objetivo es identificar los puntos débiles de empresas para sugerir formación específica a sus empleados. En una primera iteración, nos centraremos en un tipo concreto de competencias, presentes en el dataset [*IBM HR Analytics Employee Attrition & Performance*](https://www.kaggle.com/datasets/pavansubhasht/ibm-hr-analytics-attrition-dataset). Aunque, igualmente, se ha utilizado de apoyo el dataset [*Global AI Job Market Dataset (2010–2025)*](https://www.kaggle.com/datasets/terencekatua/global-ai-job-market-dataset-20102025). Ambos pertenecientes al mercado corporativo, donde priman las capacidades digitales, de investigación, análisis, gestión y comunicación. Los roles que se evalúan son técnicos, científicos, analíticos y directivos. Todos ellos pueden codificarse en un conjunto de habilidades explícitas, su desempeño es fácilmente observable con KPIs y las carencias se pueden solventar con recapacitación. Esto permite construir una «skill matrix» (competencias que posee la empresa representadas por sus trabajadores) y una «target matrix» (competencias que se prevé que se mantengan relevantes a corto y medio plazo).
+El objetivo es identificar los puntos débiles de empresas para sugerir formación específica a sus empleados. En una primera iteración, nos centraremos en un tipo concreto de competencias, presentes en el dataset [*IBM HR Analytics Employee Attrition & Performance*](https://www.kaggle.com/datasets/pavansubhasht/ibm-hr-analytics-attrition-dataset). Aunque, igualmente, se ha utilizado de apoyo el dataset [*Global AI Job Market Dataset (2010–2025)*](https://www.kaggle.com/datasets/terencekatua/global-ai-job-market-dataset-20102025). Ambos pertenecientes al mercado corporativo, donde priman las capacidades digitales, de investigación, análisis, gestión y comunicación. Los roles que se evalúan son técnicos, científicos, analíticos y directivos. Todos ellos pueden codificarse en un conjunto de habilidades explícitas, su desempeño es fácilmente observable con KPIs y las carencias se pueden solventar con recapacitación. Esto permite construir una «Skill Matrix» (competencias que posee la empresa representadas por sus trabajadores) y una «Target Matrix» (competencias que se prevé que se mantengan relevantes a corto y medio plazo).
+
+<br>
+
+$$
+\text{gap}(e, s) = \max\Bigl(\text{target}(e, s) - \text{skill}(e, s), \:0\Bigr)
+$$
+
+<br>
+
+```
+e: employee
+s: skill
+```
 
 <br>
 

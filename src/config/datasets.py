@@ -35,13 +35,21 @@ TARGET_MATRIX_CONFIGURATION = {
     "FINAL_TARGET_MATRIX_OUTPUT_PATH": "data/final/target_matrix_result.csv",
 }
 
+GAP_MATRIX_CONFIGURATION = {
+    "SKILL_MATRIX_PATH": SKILL_MATRIX_CONFIGURATION["FINAL_SKILL_MATRIX_OUTPUT_PATH"],
+    "TARGET_MATRIX_PATH": TARGET_MATRIX_CONFIGURATION[
+        "FINAL_TARGET_MATRIX_OUTPUT_PATH"
+    ],
+    "FINAL_GAP_MATRIX_OUTPUT_PATH": "data/final/gap_matrix_result.csv",
+}
+
 RECOMMENDATION_MATRIX_CONFIGURATION = {
     "FINAL_RECOMMENDATION_MATRIX_OUTPUT_PATH": "data/final/course_skills_matrix.csv",
     "UNMAPPED_SKILLS_REPORT_PATH": "data/reports/unmapped_skills.json",
 }
 
 COURSE_RECOMMENDATIONS_CONFIGURATION = {
-    "GAP_MATRIX_PATH": "data/final/gap_matrix_result.csv",
+    "GAP_MATRIX_PATH": GAP_MATRIX_CONFIGURATION["FINAL_GAP_MATRIX_OUTPUT_PATH"],
     "COURSE_MATRIX_PATH": "data/final/course_skills_matrix.csv",
     "MODEL_PATH": "models/trained/course_recommendations_model.pkl",
     "CURRENT_EMPLOYEES_RECOMMENDATIONS_PATH": "data/final/course_recommendations.csv",

@@ -1,24 +1,29 @@
-import __main__
 import logging
+
+import __main__
 
 from api.singleton import get_courses_api
 from config.datasets import (
     COMPANY_GOAL_SKILLS_CONFIGURATION,
     COURSE_RECOMMENDATIONS_CONFIGURATION,
     DATASETS_CONFIGURATION,
+    GAP_MATRIX_CONFIGURATION,
     RECOMMENDATION_MATRIX_CONFIGURATION,
     SKILL_MATRIX_CONFIGURATION,
     TARGET_DEMAND_SKILL_MATRIX_CONFIGURATION,
     TARGET_MATRIX_CONFIGURATION,
 )
 from config.global_skills import GLOBAL_SKILLS
+from gap_matrix.create_gap_matrix import create_gap_matrix
 from recommender.create_courses_matrix import create_courses_matrix
 from recommender.create_recommendation_model import generate_recommendations
+from recommender.evaluate_recommendations import run_evaluation
 from schemas import (
     CompanyGoalSkillsConfig,
     CourseSkillsMatrixConfig,
     DatabaseConfig,
     DownloadConfig,
+    GapMatrixConfig,
     RecommendationConfig,
     SkillDemandVectorConfig,
     SkillMatrixConfig,
@@ -28,18 +33,16 @@ from schemas import (
 from scripts.create_database import create_database
 from scripts.download_data import download_kaggle_datasets
 from skill_matrix.create_skill_matrix import create_skill_matrix
-from recommender.evaluate_recommendations import run_evaluation
+from target_matrix.create_company_goal_skills import create_company_goal_skills
 from target_matrix.create_skill_demand_vector import (
     create_skill_demand_vector_by_family,
 )
 from target_matrix.create_target_matrix import create_target_matrix
-from target_matrix.create_company_goal_skills import create_company_goal_skills
 
 
 def run_pipeline():
 
     try:
-
         testing_mode = getattr(__main__, "RECOMMENDATION_TESTING_MODE_ON", False)
 
         if not testing_mode:
@@ -117,6 +120,18 @@ def run_pipeline():
                     skill_demand_path=TARGET_MATRIX_CONFIGURATION["SKILL_DEMAND_PATH"],
                     final_output_path=TARGET_MATRIX_CONFIGURATION[
                         "FINAL_TARGET_MATRIX_OUTPUT_PATH"
+                    ],
+                )
+            )
+
+            logging.info("Creating gap matrix")
+
+            create_gap_matrix(
+                config=GapMatrixConfig(
+                    skill_matrix_path=GAP_MATRIX_CONFIGURATION["SKILL_MATRIX_PATH"],
+                    target_matrix_path=GAP_MATRIX_CONFIGURATION["TARGET_MATRIX_PATH"],
+                    final_output_path=GAP_MATRIX_CONFIGURATION[
+                        "FINAL_GAP_MATRIX_OUTPUT_PATH"
                     ],
                 )
             )

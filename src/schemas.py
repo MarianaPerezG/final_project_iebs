@@ -60,6 +60,14 @@ class CompanyGoalSkillsConfig:
     output_path: str
 
 
+# Gap Matrix
+@dataclass
+class GapMatrixConfig:
+    skill_matrix_path: str
+    target_matrix_path: str
+    final_output_path: str
+
+
 # Course API
 @dataclass
 class Course:

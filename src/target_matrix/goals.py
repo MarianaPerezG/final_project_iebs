@@ -6,7 +6,7 @@ from config.dummy_goals import COMPANY_GOALS as DUMMY_GOALS
 from config.global_skills import GLOBAL_SKILLS
 
 
-def get_company_goals() -> dict[str, float]:
+def get_company_goals() -> dict[str, int]:
     """
     Load company goals from CSV (generated via NLP) if available,
     otherwise fall back to dummy goals.
@@ -32,4 +32,4 @@ def get_company_goals() -> dict[str, float]:
     """
 
     # Fall back to dummy goals if CSV not available
-    return {skill: float(DUMMY_GOALS.get(skill, 0)) for skill in GLOBAL_SKILLS}
+    return {skill: int(DUMMY_GOALS.get(skill, 0)) for skill in GLOBAL_SKILLS}
