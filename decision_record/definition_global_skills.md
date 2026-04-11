@@ -9,7 +9,7 @@ El objetivo es identificar los puntos d√©biles de empresas para sugerir formaci√
 <br>
 
 $$
-\text{gap}(e, s) = \max\Bigl(\text{target}(e, s) - \text{skill}(e, s), \:0\Bigr)
+\text{gap}(e, s) = \max\Bigl(\text{target}(e, s) - \text{skill}(e, s), \\:0\Bigr)
 $$
 
 <br>
