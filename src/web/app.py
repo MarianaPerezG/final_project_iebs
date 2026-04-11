@@ -401,10 +401,7 @@ def employee_detail(emp_id):
                     {"skill": format_skill_name(skill), "score": float(score)}
                     for skill, score in temp_emp["current_skills"].items()
                 ],
-                target_skills=[
-                    {"skill": format_skill_name(skill), "score": float(score)}
-                    for skill, score in temp_emp["target_skills"].items()
-                ],
+                target_skills=[],
                 gap_skills=[
                     {"skill": format_skill_name(skill), "gap": float(gap_val)}
                     for skill, gap_val in temp_emp["gap_skills"].items()
@@ -554,10 +551,7 @@ def employee_detail(emp_id):
                 for col in SKILL_COLUMNS
                 if col in emp_row.index and float(emp_row[col]) > 0
             ],
-            target_skills=[
-                {"skill": format_skill_name(skill), "score": float(score)}
-                for skill, score in target_skills_dict.items()
-            ],
+            target_skills=[],
             gap_skills=gap_skills,
             top_gap_skills=top_gap_skills,
             recommendations=recommendations,
