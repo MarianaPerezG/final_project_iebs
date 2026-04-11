@@ -1,6 +1,8 @@
 import logging
 
 import __main__
+import pandas as pd
+from pathlib import Path
 
 from api.singleton import get_courses_api
 from config.datasets import (
@@ -208,4 +210,103 @@ def run_pipeline():
         logging.info("Pipeline executed successfully")
     except Exception as e:
         logging.error(f"Error occurred while running pipeline: {e}")
+        raise
+
+
+def recalculate_pipeline_from_new_company_goal():
+
+    try:
+        logging.info("Starting pipeline recalculation from new company goals")
+
+        skill_matrix_path = Path(
+            SKILL_MATRIX_CONFIGURATION["FINAL_SKILL_MATRIX_OUTPUT_PATH"]
+        )
+        skill_demand_path = Path(
+            TARGET_DEMAND_SKILL_MATRIX_CONFIGURATION["SKILL_DEMAND_OUTPUT_PATH"]
+        )
+
+        if not skill_matrix_path.exists():
+            raise FileNotFoundError(
+                f"Skill matrix not found. Please run the full pipeline first at: {skill_matrix_path}"
+            )
+
+        if not skill_demand_path.exists():
+            raise FileNotFoundError(
+                f"Skill demand vector not found. Please run the full pipeline first at: {skill_demand_path}"
+            )
+
+        try:
+            skill_demand_df = pd.read_csv(skill_demand_path)
+            if skill_demand_df.empty:
+                raise ValueError("Skill demand vector file is empty")
+            if (
+                "skill" not in skill_demand_df.columns
+                or "demand_score" not in skill_demand_df.columns
+            ):
+                raise ValueError(
+                    f"Skill demand vector missing required columns. Found: {skill_demand_df.columns.tolist()}"
+                )
+        except pd.errors.EmptyDataError:
+            raise ValueError("Skill demand vector file is empty or corrupted")
+
+        logging.info("✓ Prerequisites validated")
+
+        logging.info("Step 1/4: Creating company goal skills")
+        create_company_goal_skills(
+            config=CompanyGoalSkillsConfig(
+                company_goals_path=COMPANY_GOAL_SKILLS_CONFIGURATION[
+                    "COMPANY_GOALS_PATH"
+                ],
+                output_path=COMPANY_GOAL_SKILLS_CONFIGURATION["OUTPUT_PATH"],
+            )
+        )
+
+        # Step 2: Target Matrix
+        logging.info("Step 2/4: Creating target matrix")
+        create_target_matrix(
+            config=TargetMatrixConfig(
+                skill_matrix_path=SKILL_MATRIX_CONFIGURATION[
+                    "FINAL_SKILL_MATRIX_OUTPUT_PATH"
+                ],
+                skill_demand_path=TARGET_DEMAND_SKILL_MATRIX_CONFIGURATION[
+                    "SKILL_DEMAND_OUTPUT_PATH"
+                ],
+                final_output_path=TARGET_MATRIX_CONFIGURATION[
+                    "FINAL_TARGET_MATRIX_OUTPUT_PATH"
+                ],
+            )
+        )
+
+        # Step 3: Gap Matrix
+        logging.info("Step 3/4: Creating gap matrix")
+        create_gap_matrix(
+            config=GapMatrixConfig(
+                skill_matrix_path=GAP_MATRIX_CONFIGURATION["SKILL_MATRIX_PATH"],
+                target_matrix_path=GAP_MATRIX_CONFIGURATION["TARGET_MATRIX_PATH"],
+                final_output_path=GAP_MATRIX_CONFIGURATION[
+                    "FINAL_GAP_MATRIX_OUTPUT_PATH"
+                ],
+            )
+        )
+
+        # Step 4: Recommendations
+        logging.info("Step 4/4: Generating recommendations")
+        generate_recommendations(
+            config=RecommendationConfig(
+                gap_matrix_path=COURSE_RECOMMENDATIONS_CONFIGURATION["GAP_MATRIX_PATH"],
+                course_matrix_path=COURSE_RECOMMENDATIONS_CONFIGURATION[
+                    "COURSE_MATRIX_PATH"
+                ],
+                model_output_path=COURSE_RECOMMENDATIONS_CONFIGURATION["MODEL_PATH"],
+                recommendations_output_path=COURSE_RECOMMENDATIONS_CONFIGURATION[
+                    "CURRENT_EMPLOYEES_RECOMMENDATIONS_PATH"
+                ],
+                top_k=3,
+            )
+        )
+
+        logging.info("✅ Pipeline recalculation completed successfully")
+
+    except Exception as e:
+        logging.error(f"Error during pipeline recalculation: {e}", exc_info=True)
         raise

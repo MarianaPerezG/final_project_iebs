@@ -12,7 +12,7 @@ Los job titles del dataset [*LinkedIn Job Postings (2023-2024)*](https://www.kag
 
 <br>
 
-**Fase 1: Lexical Matching (rápido, ~10ms)**
+**Fase 1: Lexical Matching**
 
 1. Normalizar title: convertir a minúsculas, remover puntuación, espacios múltiples
 2. Buscar tokens exactos en diccionario estático de mappings
@@ -30,7 +30,7 @@ Los job titles del dataset [*LinkedIn Job Postings (2023-2024)*](https://www.kag
 
 <br>
 
-**Fase 2: Semantic Matching (preciso, ~500ms)**
+**Fase 2: Semantic Matching**
 
 1. Si no hay match lexical, usar embeddings (`SentenceTransformer`)
 2. Comparar embedding del title contra embeddings de familias
@@ -56,19 +56,6 @@ Se entrenan embeddings para cada familia ocupacional:
 
 <br>
 
-## Casos Edge Detectados
-
-<br>
-
-| Title | Lexical | Semantic | Resultado |
-|-------|---------|----------|-----------|
-| "ML Engineer" | ✗ | digital_engineering (0.82) | digital_engineering |
-| "HR Manager" | ✗ | corporate_services (0.88) | corporate_services |
-| "Chief Data Officer" | ✗ | decision_advisory (0.71) | decision_advisory |
-| "Janitor" | ✗ | None (< 0.65) | business_operations (fallback) |
-
-<br>
-
 ## Fallback y Logging
 
 <br>
@@ -77,15 +64,5 @@ Si score semántico < 0.65:
 - Asignar a familia **por defecto** (`business_operations`)
 - Loguear warning con confidence score
 - Permitir override manual en configuración
-
-<br>
-
-## Performance
-
-<br>
-
-- **Latencia**: Fase 1: ~10ms, Fase 2: ~500ms
-- **Accuracy**: ~92% (validado contra expert labels)
-- **Throughput**: ~100 títulos/segundo en CPU
 
 <br>

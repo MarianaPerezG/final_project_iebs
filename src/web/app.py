@@ -4,6 +4,7 @@ import logging
 import sys
 import ast
 from pathlib import Path
+import threading
 
 
 src_path = Path(__file__).parent.parent.absolute()
@@ -20,11 +21,40 @@ from config.datasets import (
 from config.global_skills import GLOBAL_SKILLS
 from config.levels import get_job_level_name
 from target_matrix.create_company_goals import create_company_goals
+from scripts.pipelines import recalculate_pipeline_from_new_company_goal
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__, template_folder="templates", static_folder="static")
+
+# Global state for pipeline processing
+pipeline_state = {"processing": False, "status": "idle", "progress": 0, "message": ""}
+
+
+def _run_pipeline_thread():
+    """Wrapper to run pipeline in background thread."""
+    global pipeline_state
+
+    try:
+        pipeline_state["processing"] = True
+        pipeline_state["status"] = "process"
+
+        # Run the actual pipeline recalculation
+        recalculate_pipeline_from_new_company_goal()
+
+        pipeline_state["status"] = "complete"
+        pipeline_state["progress"] = 100
+        pipeline_state["message"] = "Pipeline completed!"
+        logger.info("Pipeline recalculation thread finished successfully")
+
+    except Exception as e:
+        pipeline_state["status"] = "error"
+        pipeline_state["message"] = f"Error: {str(e)}"
+        logger.error(f"Pipeline thread failed: {e}", exc_info=True)
+
+    finally:
+        pipeline_state["processing"] = False
 
 
 SKILL_COLUMNS = GLOBAL_SKILLS
@@ -137,8 +167,58 @@ def save_company_goals():
             error_message="Add at least one company goal before saving.",
         )
 
+    # Save company goals
     create_company_goals(goals)
+
+    # Start pipeline recalculation in background thread
+    pipeline_thread = threading.Thread(target=_run_pipeline_thread, daemon=True)
+    pipeline_thread.start()
+
     return redirect(url_for("home", saved=1))
+
+
+@app.route("/api/company-goals", methods=["POST"])
+def api_save_company_goals():
+    """API endpoint to save goals and trigger pipeline recalculation."""
+    data = request.get_json()
+    goals = data.get("goals", [])
+
+    if not goals or not isinstance(goals, list):
+        return jsonify({"error": "Invalid goals format"}), 400
+
+    goals = [g.strip() for g in goals if isinstance(g, str) and g.strip()]
+
+    if not goals:
+        return jsonify({"error": "At least one goal is required"}), 400
+
+    try:
+        # Save company goals
+        create_company_goals(goals)
+
+        # Start pipeline recalculation in background thread
+        pipeline_thread = threading.Thread(target=_run_pipeline_thread, daemon=True)
+        pipeline_thread.start()
+
+        return (
+            jsonify(
+                {
+                    "success": True,
+                    "message": "Goals saved. Pipeline recalculation started.",
+                    "goals_count": len(goals),
+                }
+            ),
+            200,
+        )
+
+    except Exception as e:
+        logger.error(f"Error saving goals: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/pipeline-status", methods=["GET"])
+def get_pipeline_status():
+    """Get current pipeline status."""
+    return jsonify(pipeline_state), 200
 
 
 @app.route("/employee/<emp_id>")

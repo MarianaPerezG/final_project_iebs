@@ -72,26 +72,6 @@ Estas palabras clave se buscan case-insensitively y se suman al valor final.
 
 <br>
 
-## Ejemplo Concreto
-
-<br>
-
-**Empleado:**
-- Role: `Research Scientist`
-- Education: 4 (Master)
-- PerformanceRating: 4 (Destacado)
-- Family: `Research and Development`
-
-**Cálculo para skill `domain_expertise`:**
-
-1. Base family: `domain_expertise` en R&D = 4.0
-2. Normalized metrics: `e_n = (4-3)/2 = 0.5`, `p_n = (4-3)/2 = 0.5`
-3. Multiplier (hard skill): `m = 1 + 0.40*0.5 + 0.20*0.5 = 1.20`
-4. Semantic adjustment: "+0.4" (por "Scientist")
-5. Final: `clamp[0,5](4.0 * 1.20 + 0.4) = clamp(5.2) = 5.0`
-
-<br>
-
 ## Escala de Puntuación Base por Familia
 
 <br>

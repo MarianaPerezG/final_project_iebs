@@ -49,7 +49,6 @@ Documentación de decisiones técnicas y arquitectura del sistema de recomendaci
 ### Transversales
 
 - [**job_title_resolution.md**](job_title_resolution.md) — Mapeo títulos a familias: lexical → semantic
-- [**data_validation_rules.md**](data_validation_rules.md) — Limpieza, validaciones, manejo de NaN
 - [**database_schema_design.md**](database_schema_design.md) — SQLite: tablas, índices, queries
 - [**evaluation_metrics_strategy.md**](evaluation_metrics_strategy.md) — Métricas: coverage, precision, diversity
 
