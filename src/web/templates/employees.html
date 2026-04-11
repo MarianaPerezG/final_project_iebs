@@ -3,6 +3,84 @@
 {% block title %}Employee Directory{% endblock %}
 
 {% block content %}
+<!-- New Employee Modal -->
+<div id="newEmployeeModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5>Add New Employee</h5>
+            <button type="button" class="btn-close" onclick="closeNewEmployeeModal()"></button>
+        </div>
+        <div class="modal-body">
+            <form id="newEmployeeForm">
+                <div class="mb-3">
+                    <label for="jobRole" class="form-label">Job Role *</label>
+                    <select id="jobRole" name="jobRole" class="form-select" required>
+                        <option value="">Select a job role</option>
+                        <option value="Human Resources">Human Resources</option>
+                        <option value="Healthcare Representative">Healthcare Representative</option>
+                        <option value="Sales Executive">Sales Executive</option>
+                        <option value="Sales Representative">Sales Representative</option>
+                        <option value="Laboratory Technician">Laboratory Technician</option>
+                        <option value="Research Director">Research Director</option>
+                        <option value="Research Scientist">Research Scientist</option>
+                        <option value="Manager">Manager</option>
+                        <option value="Manufacturing Director">Manufacturing Director</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="jobLevel" class="form-label">Job Level *</label>
+                    <select id="jobLevel" name="jobLevel" class="form-select" required>
+                        <option value="">Select level</option>
+                        <option value="1">Entry Level</option>
+                        <option value="2">Mid Level</option>
+                        <option value="3">Senior</option>
+                        <option value="4">Lead</option>
+                        <option value="5">Executive</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="education" class="form-label">Education Level *</label>
+                    <select id="education" name="education" class="form-select" required>
+                        <option value="">Select education</option>
+                        <option value="1">Below College</option>
+                        <option value="2">College</option>
+                        <option value="3">Bachelor</option>
+                        <option value="4">Master</option>
+                        <option value="5">Doctor</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="performance" class="form-label">Performance Rating *</label>
+                    <select id="performance" name="performance" class="form-select" required>
+                        <option value="">Select performance</option>
+                        <option value="3">Low (3)</option>
+                        <option value="4">High (4)</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeNewEmployeeModal()">Cancel</button>
+            <button type="button" class="btn btn-primary" onclick="submitNewEmployee()">Add Employee</button>
+        </div>
+    </div>
+</div>
+
+<!-- Processing Loader Modal -->
+<div id="processingModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content modal-centered">
+        <div class="modal-body" style="background: #0d1f3c; padding: 40px;">
+            <h5 class="mb-4" style="color: #ffffff; font-weight: 600;">Calculating recommendations</h5>
+            <div class="progress mb-4" style="height: 24px; background-color: rgba(255, 255, 255, 0.2);">
+                <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated" 
+                     role="progressbar" style="width: 0%; background-color: #64b5f6;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                </div>
+            </div>
+            <p id="processingMessage" style="text-align: center; color: #ffffff; font-weight: 500;">Initializing...</p>
+        </div>
+    </div>
+</div>
+
 <div class="page-hero">
     <h1>Employee directory</h1>
     <p>Browse employees, inspect their skill gaps, and review the course recommendations generated from the current development model.</p>
@@ -12,7 +90,10 @@
     <div class="col-12">
         <div class="card mb-4">
             <div class="card-body">
-                <h2 class="card-title mb-4">Employee directory</h2>
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="card-title mb-0">Employee directory</h2>
+                    <button class="btn btn-success" onclick="openNewEmployeeModal()">Add new employee</button>
+                </div>
 
                 <form method="GET" class="mb-4">
                     <div class="input-group">
@@ -70,4 +151,183 @@
         </div>
     </div>
 </div>
+
+<style>
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+    }
+
+    .modal-content {
+        background: #0d1f3c;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 500px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
+    .modal-centered {
+        max-width: 400px;
+    }
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        background: #0d1f3c;
+    }
+
+    .modal-header h5 {
+        margin: 0;
+        font-weight: 600;
+        color: #ffffff;
+    }
+
+    .btn-close {
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: #ffffff;
+        padding: 0;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-close:hover {
+        color: #e3f2fd;
+    }
+
+    .modal-body {
+        padding: 20px;
+        background: #0d1f3c;
+    }
+
+    .modal-body .form-label {
+        color: #ffffff;
+        font-weight: 500;
+    }
+
+    .modal-body .form-select,
+    .modal-body .form-control {
+        border-color: #64b5f6;
+        background-color: rgba(255, 255, 255, 0.95);
+        color: #0d47a1;
+    }
+
+    .modal-body .form-select:focus,
+    .modal-body .form-control:focus {
+        border-color: #42a5f5;
+        box-shadow: 0 0 0 0.2rem rgba(66, 165, 245, 0.25);
+    }
+
+    .modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        padding: 20px;
+        border-top: 1px solid rgba(255, 255, 255, 0.2);
+        background: #0d1f3c;
+    }
+
+    .progress-bar-striped {
+        animation: progress-bar-stripes 1s linear infinite;
+    }
+
+    .progress-bar-animated {
+        animation: progress-bar-stripes 1s linear infinite;
+    }
+
+    @keyframes progress-bar-stripes {
+        0% { background-position: 0 0; }
+        100% { background-position: 40px 0; }
+    }
+</style>
+
+<script>
+function openNewEmployeeModal() {
+    document.getElementById('newEmployeeModal').style.display = 'flex';
+}
+
+function closeNewEmployeeModal() {
+    document.getElementById('newEmployeeModal').style.display = 'none';
+    document.getElementById('newEmployeeForm').reset();
+}
+
+function submitNewEmployee() {
+    const form = document.getElementById('newEmployeeForm');
+    if (!form.checkValidity()) {
+        alert('Please fill all required fields');
+        return;
+    }
+
+    const data = {
+        jobRole: document.getElementById('jobRole').value,
+        jobLevel: parseInt(document.getElementById('jobLevel').value),
+        education: parseInt(document.getElementById('education').value),
+        performance: parseInt(document.getElementById('performance').value)
+    };
+
+    closeNewEmployeeModal();
+    showProcessingModal();
+
+    fetch('/api/employees', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            setTimeout(() => {
+                hideProcessingModal();
+                window.location.href = '/employee/' + data.employee_id;
+            }, 1000);
+        } else {
+            hideProcessingModal();
+            alert('Error: ' + (data.error || 'Failed to create employee'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        hideProcessingModal();
+        alert('Error creating employee: ' + error.message);
+    });
+}
+
+function showProcessingModal() {
+    document.getElementById('processingModal').style.display = 'flex';
+    document.getElementById('progressBar').style.width = '0%';
+    document.getElementById('processingMessage').textContent = 'Initializing...';
+}
+
+function hideProcessingModal() {
+    document.getElementById('processingModal').style.display = 'none';
+}
+
+// Close modal when clicking outside
+document.addEventListener('click', function(event) {
+    const newEmpModal = document.getElementById('newEmployeeModal');
+    if (event.target === newEmpModal) {
+        closeNewEmployeeModal();
+    }
+});
+</script>
 {% endblock %}

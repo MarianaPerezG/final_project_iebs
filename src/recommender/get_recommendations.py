@@ -55,5 +55,7 @@ def _recommend_for_user_with_model(
 
     model = CourseRecommendationModel.load(model_path)
     recommender = CourseRecommender(model)
-    recommendations = recommender.recommend(user_id, topk=topk)
+    recommendations = recommender.generate_recommendations_for_employee(
+        user_id, topk=topk
+    )
     return recommendations

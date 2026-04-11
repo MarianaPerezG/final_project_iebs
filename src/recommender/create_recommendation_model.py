@@ -65,7 +65,6 @@ class CourseRecommendationModel:
         model = cls(
             gap_matrix_path=state["gap_matrix_path"],
             course_matrix_path=state["course_matrix_path"],
-            global_skills=state["global_skills"],
             model_path=model_path,
         )
         logging.info(f"Model loaded from: {model_path}")
@@ -210,6 +209,121 @@ class CourseRecommender:
 
         recommendations.sort(key=lambda x: x["final_score"], reverse=True)
         return recommendations[:topk]
+
+    def generate_recommendations_for_employee_profile(
+        self, gap_skills: dict, job_level: int, job_role: str = "", topk: int = 3
+    ) -> List[dict]:
+        """
+        Generate recommendations for a new employee profile (not in gap_matrix).
+
+        Args:
+            gap_skills: Dictionary with skill gaps {skill: gap_value}
+            job_level: Job level (1-5)
+            job_role: Job role name (for semantic context)
+            topk: Number of top recommendations
+
+        Returns:
+            List of recommendations with course_title and skills
+        """
+        try:
+            # Create gap vector from gap_skills dict
+            gap_vector = np.array(
+                [float(gap_skills.get(skill, 0.0)) for skill in self.global_skills]
+            )
+            gap_vec_normalized = normalize(
+                gap_vector.reshape(1, -1), axis=1, norm="l2"
+            ).ravel()
+
+            # Create employee embedding on-the-fly using gap description
+            gap_description = (
+                "Employee skill gaps: "
+                + ", ".join(
+                    f"{skill.replace('_', ' ')}: {float(gap_skills.get(skill, 0)):.2f}"
+                    for skill in self.global_skills
+                    if float(gap_skills.get(skill, 0)) > 0.0
+                )
+                if any(
+                    float(gap_skills.get(skill, 0)) > 0.0
+                    for skill in self.global_skills
+                )
+                else "No significant gaps"
+            )
+
+            # Create minimal dataframe for embedding generation
+            employee_df = pd.DataFrame(
+                [
+                    {
+                        "EmployeeNumber": 0,
+                        "JobRole": job_role,
+                        "JobLevel": job_level,
+                        **gap_skills,
+                    }
+                ]
+            )
+
+            employee_embedding = create_employee_description_embeddings(
+                employee_df, employee_number=0
+            )
+
+            recommendations = []
+
+            for course_idx in range(len(self.course_matrix)):
+                course_row = self.course_matrix.iloc[course_idx]
+
+                # Get course skill vector
+                skill_cols = [c for c in self.global_skills if c in course_row.index]
+                total_score = sum(float(course_row.get(c, 0.0)) for c in skill_cols)
+                if total_score == 0:
+                    continue
+
+                course_vec = self._course_matrix_values[course_idx]
+                course_level = str(course_row.get("level", "intermediate"))
+
+                # HARD FILTER: Only include courses within ±2 levels
+                course_lvl_num = get_course_level_number(course_level)
+                level_diff = abs(course_lvl_num - job_level)
+                if level_diff > 2:
+                    continue
+
+                # Numeric similarity (cosine)
+                cosine_sim = float(np.dot(gap_vec_normalized, course_vec))
+
+                # Level compatibility
+                level_factor = self._level_compatibility_factor(course_level, job_level)
+
+                # Semantic similarity
+                course_embedding = self._course_embeddings[course_idx]
+                semantic_sim = float(np.dot(employee_embedding, course_embedding))
+                semantic_sim = max(0.0, min(1.0, semantic_sim))
+
+                # Combined score: 0.2 * cosine + 0.3 * semantic + 0.5 * level
+                final_score = 0.2 * cosine_sim + 0.3 * semantic_sim + 0.5 * level_factor
+
+                # Get skill names covered by this course
+                course_skills = []
+                for skill in self.global_skills:
+                    if skill in course_row.index and float(course_row[skill]) > 0:
+                        formatted = skill.replace("_", " ").title()
+                        course_skills.append(formatted)
+
+                recommendations.append(
+                    {
+                        "course_title": course_row.get("course_title", ""),
+                        "skills": course_skills[:3],
+                        "final_score": round(final_score, 4),
+                    }
+                )
+
+            recommendations.sort(key=lambda x: x["final_score"], reverse=True)
+            logging.info(
+                f"Generated {len(recommendations)} recommendations for profile {job_role} (level {job_level})"
+            )
+
+            return recommendations[:topk]
+
+        except Exception as e:
+            logging.error(f"Error generating recommendations for employee profile: {e}")
+            raise
 
     def generate_recommendations_for_all_employees(self, topk: int = 3) -> pd.DataFrame:
         """

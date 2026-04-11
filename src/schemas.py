@@ -16,7 +16,8 @@ class DownloadConfig:
 @dataclass
 class TableConfig:
     name: str
-    csv_path: str
+    csv_path: str = None
+    sql_schema: str = None
 
 
 @dataclass

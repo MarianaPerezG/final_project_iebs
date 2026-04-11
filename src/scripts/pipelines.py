@@ -152,6 +152,29 @@ def run_pipeline():
                                 f'{DATASETS_CONFIGURATION["COURSE_RECOMMENDATION_OUTPUT_PATH"]}/edx.csv'
                             ),
                         ),
+                        TableConfig(
+                            name="gap_matrix",
+                            csv_path=COURSE_RECOMMENDATIONS_CONFIGURATION[
+                                "GAP_MATRIX_PATH"
+                            ],
+                        ),
+                        TableConfig(
+                            name="employees",
+                            sql_schema="""
+                                CREATE TABLE employees (
+                                    id TEXT PRIMARY KEY,
+                                    job_role TEXT NOT NULL,
+                                    job_level INTEGER NOT NULL,
+                                    education INTEGER NOT NULL,
+                                    performance INTEGER NOT NULL,
+                                    current_skills TEXT NOT NULL,
+                                    target_skills TEXT NOT NULL,
+                                    gap_skills TEXT NOT NULL,
+                                    recommendations TEXT NOT NULL,
+                                    created_at TEXT NOT NULL
+                                )
+                            """,
+                        ),
                     ],
                     db_path="src/config/database.db",
                 )
@@ -214,7 +237,6 @@ def run_pipeline():
 
 
 def recalculate_pipeline_from_new_company_goal():
-
     try:
         logging.info("Starting pipeline recalculation from new company goals")
 
@@ -249,9 +271,9 @@ def recalculate_pipeline_from_new_company_goal():
         except pd.errors.EmptyDataError:
             raise ValueError("Skill demand vector file is empty or corrupted")
 
-        logging.info("✓ Prerequisites validated")
+        logging.info("Prerequisites validated")
 
-        logging.info("Step 1/4: Creating company goal skills")
+        logging.info("Creating company goal skills")
         create_company_goal_skills(
             config=CompanyGoalSkillsConfig(
                 company_goals_path=COMPANY_GOAL_SKILLS_CONFIGURATION[
@@ -261,8 +283,7 @@ def recalculate_pipeline_from_new_company_goal():
             )
         )
 
-        # Step 2: Target Matrix
-        logging.info("Step 2/4: Creating target matrix")
+        logging.info("Creating target matrix")
         create_target_matrix(
             config=TargetMatrixConfig(
                 skill_matrix_path=SKILL_MATRIX_CONFIGURATION[
@@ -277,8 +298,7 @@ def recalculate_pipeline_from_new_company_goal():
             )
         )
 
-        # Step 3: Gap Matrix
-        logging.info("Step 3/4: Creating gap matrix")
+        logging.info("Creating gap matrix")
         create_gap_matrix(
             config=GapMatrixConfig(
                 skill_matrix_path=GAP_MATRIX_CONFIGURATION["SKILL_MATRIX_PATH"],
@@ -289,8 +309,7 @@ def recalculate_pipeline_from_new_company_goal():
             )
         )
 
-        # Step 4: Recommendations
-        logging.info("Step 4/4: Generating recommendations")
+        logging.info("Generating recommendations")
         generate_recommendations(
             config=RecommendationConfig(
                 gap_matrix_path=COURSE_RECOMMENDATIONS_CONFIGURATION["GAP_MATRIX_PATH"],
@@ -305,7 +324,7 @@ def recalculate_pipeline_from_new_company_goal():
             )
         )
 
-        logging.info("✅ Pipeline recalculation completed successfully")
+        logging.info("Pipeline recalculation completed successfully")
 
     except Exception as e:
         logging.error(f"Error during pipeline recalculation: {e}", exc_info=True)
