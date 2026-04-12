@@ -71,10 +71,10 @@ IBM HR Dataset       LinkedIn Postings       Company Goals        Courses API
                                     ↓                                  │
                                     └──────────────────┬───────────────┘
                                                        ↓
-                                            Recommendations (top-3)
+                                            Recommendations (top-3)+ Evaluation
                                   [Combine: Gap Matrix + Course Skills]
                                                        ↓
-                                              Web App + Evaluation
+                                                    Web App 
 ```
 
 **Flujo:**

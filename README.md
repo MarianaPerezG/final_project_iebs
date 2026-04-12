@@ -93,4 +93,24 @@ https://www.kaggle.com/datasets/marianaprezgonzlez/linkedin-job-postings-2023-20
 Source:
 https://www.kaggle.com/datasets/marianaprezgonzlez/multi-platform-online-courses-dataset/data?select=Udemy.csv
 
+# Data flow diagram 
+
+```
+IBM HR Dataset       LinkedIn Postings       Company Goals        Courses API
+      ↓                     ↓                      ↓                   ↓
+ Skill Matrix    Skill Demand Vector   Company Goal Skills      Course Skills Matrix
+      │           │                     │                              ↓
+      │           └─────────────────────┘                              │
+      │                      ↓                                         │
+      │                Target Matrix                                   │
+      │                           ↓                                    │
+      └──────────────────────→ Gap Matrix                              │
+                                    ↓                                  │
+                                    └──────────────────┬───────────────┘
+                                                       ↓
+                                            Recommendations (top-3)+ Evaluation
+                                  [Combine: Gap Matrix + Course Skills]
+                                                       ↓
+                                                   Web App 
+```
 
