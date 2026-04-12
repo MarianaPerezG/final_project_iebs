@@ -65,7 +65,6 @@ python src/main.py
 Make sure you have run the pipeline at least once before running the app. 
 
 ```bash
-# 3. Run the Flask app
 python src/web_flask/app.py
 ```
 
