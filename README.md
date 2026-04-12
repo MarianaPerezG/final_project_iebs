@@ -62,13 +62,9 @@ python src/main.py
 
 ### Run the Flask application:
 
+Make sure you have run the pipeline at least once before running the app. 
+
 ```bash
-# 1. Create/update environment (first time only)
-conda env create -f environment.yml
-
-# 2. Activate environment
-conda activate proyecto_final_iebs
-
 # 3. Run the Flask app
 python src/web_flask/app.py
 ```
