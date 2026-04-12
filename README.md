@@ -33,7 +33,7 @@ conda env create -f environment.yml
 conda activate proyecto_final_iebs
 ```
 
-### Step 4: Update dependencies (opcional)
+### Step 4: Update dependencies
 
 ```python
 conda env update -f environment.yml --prune
