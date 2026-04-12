@@ -58,11 +58,6 @@ Source:
 https://www.kaggle.com/datasets/marianaprezgonzlez/multi-platform-online-courses-dataset/data?select=Udemy.csv
 
 
-# Next Steps
-
-- Regression model with KNN for aggregation in roles and scoring rules
-
-
 ## Web App - Talent Growth Hub
 
 ### Run the Flask application:
